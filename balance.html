@@ -170,7 +170,7 @@ body {
         <button class="footer-button" onclick="navigate('investir')">Invested</button>
     </div>
    <script type="module">
-         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
@@ -210,7 +210,7 @@ function hasDayPassed(lastUpdate) {
     return now.getDate() !== lastUpdateDate.getDate();
 }
 
-// Met à jour le solde et la date de la dernière chate
+// Met à jour le solde et la date de la dernière récupération
 function updateBalance(userId, newBalance, currentDate) {
     update(ref(database, `users/${userId}`), {
         balance: newBalance,
@@ -231,18 +231,19 @@ window.recoverEarnings = function() {
                 
                 // Vérifier le niveau VIP
                 if (!userData.vipStatus || userData.vipStatus === '0') {
-                    alert("Vous n'avez pas encore investi. Veuillez investir avant de chate vos gains.");
+                    alert("Vous n'avez pas encore investi. Veuillez investir avant de récupérer vos gains.");
                     return;
                 }
 
                 if (hasDayPassed(lastRecovery)) {
-                    const earnings = calculateTotalEarnings(userData.vipStatus || '0');
-                    const newBalance = Number(userData.balance || 0) + earnings; // Convertir en nombre et additionner
+                    // Obtenir les gains quotidiens directement
+                    const dailyEarnings = userData.dailyEarnings || calculateTotalEarnings(userData.vipStatus);
+                    const newBalance = Number(userData.balance || 0) + dailyEarnings; // Convertir en nombre et additionner
                     updateBalance(user.uid, newBalance, currentDate);
-                    alert(`Vous avez récupéré ${earnings} XOF. Votre nouveau solde est de ${newBalance} XOF.`);
+                    alert(`Vous avez récupéré ${dailyEarnings} XOF. Votre nouveau solde est de ${newBalance} XOF.`);
                     location.reload(); // Recharge la page pour mettre à jour l'affichage
                 } else {
-                    alert("Vous ne pouvez chate vos gains qu'une fois par jour. Veuillez réessayer demain.");
+                    alert("Vous ne pouvez récupérer vos gains qu'une fois par jour. Veuillez réessayer demain.");
                 }
             }
         }).catch((error) => {
@@ -250,6 +251,26 @@ window.recoverEarnings = function() {
         });
     } else {
         alert("Vous devez être connecté pour récupérer vos gains.");
+    }
+};
+
+// Fonction pour mettre à jour les dailyEarnings dans Firebase
+window.updateDailyEarnings = function(newEarnings) {
+    const user = auth.currentUser;
+    if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        update(userRef, {
+            dailyEarnings: newEarnings
+        }).then(() => {
+            // Met à jour l'affichage directement
+            document.getElementById("dailyEarnings").textContent = `${newEarnings} XOF`;
+            console.log("Les dailyEarnings ont été mis à jour avec succès:", newEarnings);
+            alert("Les dailyEarnings ont été mis à jour avec succès.");
+        }).catch((error) => {
+            console.error("Erreur lors de la mise à jour des dailyEarnings :", error);
+        });
+    } else {
+        alert("Vous devez être connecté pour modifier vos dailyEarnings.");
     }
 };
 
@@ -266,7 +287,7 @@ onAuthStateChanged(auth, (user) => {
         onValue(userRef, (snapshot) => {
             const userData = snapshot.val();
             if (userData) {
-                const dailyEarnings = calculateTotalEarnings(userData.vipStatus || '0');
+                const dailyEarnings = userData.dailyEarnings || calculateTotalEarnings(userData.vipStatus || '0');
                 const weeklyEarnings = dailyEarnings * 7;
                 
                 // Récupérer et convertir le solde en nombre

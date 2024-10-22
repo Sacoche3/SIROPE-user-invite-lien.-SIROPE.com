@@ -92,7 +92,7 @@
          <strong>payé les frais de dépôt</strong>
     </div>
     <form id="rechargeForm">
-        <input type="number" id="amount" name="amount" placeholder="Montant à recharger" min="5000" required>
+        <input type="number" id="amount" name="amount" placeholder="Montant à recharger" min="1000" required>
         <select id="paymentMethod" name="paymentMethod" required>
             <option value="">Veuillez choisir un mode de paiement</option>
             <option value="mtn">MTN</option>
@@ -111,10 +111,10 @@
         var paymentMethod = document.getElementById('paymentMethod').value;
         var amount = document.getElementById('amount').value;
         var paymentDetails = {
-            mtn: 'indisponible',
+            mtn: '0554049897',
             moov: '0140719995',
             orange: 'indisponible',
-            wave: 'indisponible',
+            wave: '0554049897',
             usd: 'TR62NjKQASXmmKrxzQsCvDvxYQ71nsV3Pv'
         };
         

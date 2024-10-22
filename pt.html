@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lier Compte de Retrait</title>
+    <style>
+        body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(to bottom, #4CAF50, #FFFFFF); /* Dégradé vert en haut vers blanc en bas */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        }
+        .link-withdraw-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+        label {
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 20px;
+            display: block;
+            text-align: left;
+        }
+        input, select {
+            width: calc(100% - 20px);
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ced4da;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #868e96;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="link-withdraw-container">
+        <h2>Lier Compte de Retrait</h2>
+        <form id="linkWithdrawForm">
+            <label for="withdrawNumber">Numéro de Retrait :</label>
+            <input type="text" id="withdrawNumber" placeholder="Entrez votre numéro de retrait" required>
+
+            <label for="operator">Opérateur :</label>
+            <select id="operator" required>
+                <option value="">Sélectionnez un opérateur</option>
+                <option value="Orange Money">Orange Money</option>
+                <option value="Moov Money">Moov Money</option>
+                <option value="MTN Money">MTN Money</option>
+                <option value="Wave Vague">Wave Vague</option>
+                <option value ="USDT TROC 20">USDT TROC 20</option>
+            </select>
+           
+
+            <button type="submit">Lier le Compte</button>
+        </form>
+        <div class="footer">
+            <p>© 2024 Votre Application. Tous droits réservés.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
+            authDomain: "ciaxe-727b1.firebaseapp.com",
+            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
+            projectId: "ciaxe-727b1",
+            storageBucket: "ciaxe-727b1.appspot.com",
+            messagingSenderId: "52732576686",
+            appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const database = getDatabase();
+
+        // Soumettre le formulaire de liaison de compte
+        document.getElementById('linkWithdrawForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const user = auth.currentUser;
+
+            if (user) {
+                const withdrawNumber = document.getElementById('withdrawNumber').value;
+                const operator = document.getElementById('operator').value;
+
+                if (withdrawNumber && operator) {
+                    // Enregistrer les informations du compte de retrait dans la base de données
+                    const userWithdrawRef = ref(database, 'users/' + user.uid + '/withdrawalAccount');
+                    update(userWithdrawRef, {
+                        withdrawNumber: withdrawNumber,
+                        operator: operator
+                    }).then(() => {
+                        alert("Compte de retrait lié avec succès !");
+                        // Redirection vers la page de demande de retrait
+                        window.location.href = "retrait.html";
+                    }).catch((error) => {
+                        console.error('Erreur lors de la liaison du compte de retrait :', error);
+                    });
+                } else {
+                    alert("Veuillez remplir tous les champs.");
+                }
+            } else {
+                alert("Veuillez vous connecter pour lier un compte de retrait.");
+                window.location.href = "retrait.html";
+            }
+        });
+    </script>
+
+</body>
+</html>

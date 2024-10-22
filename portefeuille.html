@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liaison de Retrait</title>
+</head>
+<body>
+    <h1>Lier un Compte de Retrait</h1>
+    
+    <form id="linkWithdrawalForm">
+        <label for="accountNumber">Numéro de compte :</label>
+        <input type="text" id="accountNumber" name="accountNumber" required><br><br>
+        
+        <label for="operator">Opérateur :</label>
+        <select id="operator" name="operator">
+            <option value="MTN">MTN</option>
+            <option value="Moov">Moov</option>
+            <option value="Orange">Orange</option>
+            <option value="Wave">Wave</option>
+        </select><br><br>
+        
+        <label for="withdrawalPassword">Mot de passe de retrait :</label>
+        <input type="password" id="withdrawalPassword" name="withdrawalPassword" required><br><br>
+        
+        <button type="submit">Lier le Compte</button>
+    </form>
+</body>
+</html>

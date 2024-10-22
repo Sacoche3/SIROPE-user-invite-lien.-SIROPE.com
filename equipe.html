@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page d'Invitation - Équipe</title>
+    <style>
+        body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(to bottom, #4CAF50, #FFFFFF); /* Dégradé vert en haut vers blanc en bas */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 150vh
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: ;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: ; /* Couleur  pour le titre */
+            margin-bottom: 30px;
+        }
+        .referral-section, .code-section, .link-section {
+            background-color: #3cff2b;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .referral-section h2, .code-section h2, .link-section h2 {
+            text-align: center;
+            color: #ffffff; /* Couleur blanche pour le titre de la section */
+            margin-bottom: 15px;
+        }
+        .referral-section p, .code-section p, .link-section p {
+            font-size: 18px;
+            margin: 5px 0;
+            text-align: center;
+            color: #ffffff;
+        }
+        #generatedCode {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+            color: #e74c3c;
+        }
+        .copy-button {
+            padding: 10px;
+            font-size: 16px;
+            color: #000000;
+            background-color: #2ecc71;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .copy-button:hover {
+            background-color: #2b2eff;
+        }
+        /* Section avec cadre pour le lien */
+        .link-box {
+            max-width: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: #000;
+        }
+        .link-box p {
+            word-wrap: break-word; /* Le lien se répartira sur plusieurs lignes si nécessaire */
+            font-size: 18px;
+            color: #e74c3c;
+        }
+        .warning-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 10px;
+            color: red; /* Couleur du texte rouge */
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Équipe</h1>
+
+        <!-- Section Niveau de Parrainage -->
+        <div class="referral-section">
+            <h2>Niveau de parrainage</h2>
+            <p>Vous avez 3% sur le rechargement de vos invités. 
+            VIP autorisée une seule fois</p>
+            <p>Vous pouvez avoir plusieurs comptes mais une seule VIP </p>
+        </div>
+
+        <!-- Section Génération de Code -->
+        <div class="code-section">
+            <h2>Code généré</h2>
+            <p id="generatedCode"></p>
+        </div>
+
+        <!-- Section pour copier un lien -->
+        <div class="link-section">
+            <h2>Copier le lien</h2>
+            <div class="link-box">
+                <p id="generatedLink">https://exemple.com/invite/</p>
+                <button class="copy-button" onclick="copyLink()">Copier le lien</button>
+            </div>
+        </div>
+
+        <!-- Section d'avertissement -->
+        <div class="warning-section">
+            Chers utilisateurs, veuillez copier le lien de parrainage et partager à vos amis. Une fois qu'un de vos amis a investi, veuillez me contacter avec les preuves de paiement de vos amis et vous recevrez vos bonus. <br><br>
+            Ne partagez jamais votre adresse email ✉️ à quelqu'un.
+        </div>
+    </div>
+
+    <script>
+        // Générer un code aléatoire à chaque actualisation
+        function generateCode() {
+            let code = Math.random().toString(36).substring(2, 10).toUpperCase(); // Code aléatoire
+            document.getElementById('generatedCode').textContent = code;
+        }
+
+        // Fonction pour copier le lien généré
+        function copyLink() {
+            let link = document.getElementById('generatedLink').textContent;
+            navigator.clipboard.writeText(link).then(function() {
+                alert('Lien copié: ' + link);
+            }, function() {
+                alert('Erreur lors de la copie du lien.');
+            });
+        }
+
+        // Générer le code au chargement de la page
+        window.onload = generateCode;
+    </script>
+
+</body>
+</html>

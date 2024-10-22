@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page de Retrait</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .footer-button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .footer-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Page de Retrait</h1>
+        <form id="retraitForm">
+            <label for="numeroCompte">Numéro de compte</label>
+            <input type="text" id="numeroCompte" required>
+
+            <label for="operateur">Opérateur</label>
+            <select id="operateur" required>
+                <option value="MTN">MTN</option>
+                <option value="Moov">Moov</option>
+                <option value="Orange">Orange</option>
+                <option value="Wave">Wave</option>
+            </select>
+
+            <label for="modePasseRetrait">Mode de passe de retrait</label>
+            <input type="password" id="modePasseRetrait" required>
+
+            <label for="montantRetrait">Montant à retirer</label>
+            <input type="number" id="montantRetrait" required>
+
+            <button type="submit">Effectuer le Retrait</button>
+        </form>
+    </div>
+
+    <div class="footer">
+        <button class="footer-button" onclick="window.location.href='home.html'">Accueil</button>
+        <button class="footer-button" onclick="window.location.href='investir.html'">Investir</button>
+        <button class="footer-button" onclick="window.location.href='account.html'">Compte</button>
+        <button class="footer-button" onclick="window.location.href='team.html'">Équipe</button>
+    </div>
+
+    <script type="module">
+        // Initialiser Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
+            authDomain: "ciaxe-727b1.firebaseapp.com",
+            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
+            projectId: "ciaxe-727b1",
+            storageBucket: "ciaxe-727b1.appspot.com",
+            messagingSenderId: "52732576686",
+            appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById('retraitForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const montantRetrait = parseFloat(document.getElementById('montantRetrait').value);
+            const modePasseRetrait = document.getElementById('modePasseRetrait').value;
+            const userId = "user_id_example"; // Remplace avec l'ID de l'utilisateur connecté
+
+            // Récupérer le solde de l'utilisateur
+            const userRef = ref(db, 'users/' + userId);
+            const userSnapshot = await get(userRef);
+
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.val();
+                const solde = userData.solde; // Supposons que 'solde' est le champ contenant le montant
+
+                // Vérifier si le solde est suffisant
+                if (solde >= montantRetrait) {
+                    // Logique pour effectuer le retrait
+                    alert('Retrait confirmé de ' + montantRetrait + ' FCFA');
+                    
+                    // Mettre à jour le solde dans la base de données
+                    const newSolde = solde - montantRetrait;
+                    await update(userRef, { solde: newSolde });
+
+                } else {
+                    alert('Solde insuffisant pour effectuer ce retrait.');
+                }
+            } else {
+                alert('Utilisateur non trouvé.');
+            }
+        });
+    </script>
+</body>
+</html>

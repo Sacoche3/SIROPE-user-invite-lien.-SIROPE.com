@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Votre Solde</title>
+    <style>
+        :root {
+    --primary-color: #4CAF50;
+    --secondary-color: #2196F3;
+    --text-color: #333;
+    --vip-color: #FFC107;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to top, white 50%, #00ff00 50%);
+    min-height: 100vh;
+    padding: 20px;
+    padding-bottom: 89px;
+}
+
+.vip-container {
+    background-color: var(--vip-color);
+    color: var(--text-color);
+    padding: 15px;
+    text-align: center;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.email-section {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.balance-container {
+    background-color: white;
+    color: var(--text-color);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    margin-bottom: 30px;
+}
+
+.balance {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 20px 0;
+    color: var(--primary-color);
+}
+
+.earnings-info {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.earnings-info p {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.action-button {
+    background-color: var(--primary-color);
+    color: white; /* Correction ici : "blanc" doit être "white" */
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.action-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
+
+.recover-button {
+    background-color: var(--vip-color);
+    color: var(--text-color);
+}
+
+.fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%; /* Changé à 96% pour mieux s'adapter */
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    box-shadow: 0 -10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.footer-button {
+    width: 77px; /* Ajustez la largeur pour un carré */
+    height: 40px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 100;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex; /* Permet d'aligner le texte au centre */
+    align-items: center; /* Centrer verticalement */
+    justify-content: center; /* Centrer horizontalement */
+}
+
+.footer-button:hover {
+    background-color: #6a8dff;
+}
+    </style>
+</head>
+<body>
+    <div class="vip-container">
+        <h2>VIP <span id="vipStatus">0</span></h2>
+    </div>
+
+    <div class="email-section">
+        Adresse e-mail : <span id="userEmail">non connecté</span>
+    </div>
+
+    <div class="balance-container">
+        <h2>Votre Solde</h2>
+        <div id="balance" class="balance">XOF </div>
+        <div class="earnings-info">
+            <p>Gain journalier : <span id="dailyEarnings">00 XOF</span></p>
+            <p>Gain hebdomadaire : <span id="weeklyEarnings">00 XOF </span></p>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="action-button" onclick="navigate('depot')">Dépôt </button>
+        <button class="action-button" onclick="navigate('retrait')">Retrait </button>
+        <button class="action-button" onclick="navigate('pt')">Compte retrait </button>
+        <button class="action-button" onclick="navigate('service')">Service client ☎️</button>
+        <button class="action-button" onclick="navigate('index')">Déconnecter </button>
+        <button class="action-button" onclick="navigate('historique-Recharge')">Historique Recharge </button>
+        <button class="action-button recover-button" onclick="recoverEarnings()">Chate </button>
+    </div>
+
+    <div class="fixed-footer">
+        <button class="footer-button" onclick="navigate('balance')">Home</button>
+        <button class="footer-button" onclick="navigate('historique_retrait')">History</button>
+        <button class="footer-button" onclick="navigate('equipe')">Team</button>
+        <button class="footer-button" onclick="navigate('investir')">Invested</button>
+    </div>
+   <script type="module">
+         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
+    authDomain: "ciaxe-727b1.firebaseapp.com",
+    databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
+    projectId: "ciaxe-727b1",
+    storageBucket: "ciaxe-727b1.appspot.com",
+    messagingSenderId: "52732576686",
+    appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+};
+
+// Initialisation Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const database = getDatabase();
+
+// Navigation sécurisée
+window.navigate = function(page) {
+    window.location.href = `${page}.html`;
+};
+
+// Calcul des gains en fonction du statut VIP
+function calculateTotalEarnings(vipStatus) {
+    const VIP_EARNINGS = {
+        '1': 169, '2': 209, '3': 680, '4': 999, '5': 1289,
+        '6': 3456, '7': 5760, '8': 9216, '9': 11520, '10': 85000,
+    };
+    return VIP_EARNINGS[vipStatus] || 0;
+}
+
+// Vérifie si un jour s'est écoulé depuis la dernière récupération
+function hasDayPassed(lastUpdate) {
+    const now = new Date();
+    const lastUpdateDate = new Date(lastUpdate);
+    return now.getDate() !== lastUpdateDate.getDate();
+}
+
+// Met à jour le solde et la date de la dernière chate
+function updateBalance(userId, newBalance, currentDate) {
+    update(ref(database, `users/${userId}`), {
+        balance: newBalance,
+        lastRecovery: currentDate.toISOString()
+    });
+}
+
+// Fonction pour récupérer les gains
+window.recoverEarnings = function() {
+    const user = auth.currentUser;
+    if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        get(userRef).then((snapshot) => {
+            const userData = snapshot.val();
+            if (userData) {
+                const currentDate = new Date();
+                const lastRecovery = new Date(userData.lastRecovery || 0);
+                
+                // Vérifier le niveau VIP
+                if (!userData.vipStatus || userData.vipStatus === '0') {
+                    alert("Vous n'avez pas encore investi. Veuillez investir avant de chate vos gains.");
+                    return;
+                }
+
+                if (hasDayPassed(lastRecovery)) {
+                    const earnings = calculateTotalEarnings(userData.vipStatus || '0');
+                    const newBalance = Number(userData.balance || 0) + earnings; // Convertir en nombre et additionner
+                    updateBalance(user.uid, newBalance, currentDate);
+                    alert(`Vous avez récupéré ${earnings} XOF. Votre nouveau solde est de ${newBalance} XOF.`);
+                    location.reload(); // Recharge la page pour mettre à jour l'affichage
+                } else {
+                    alert("Vous ne pouvez chate vos gains qu'une fois par jour. Veuillez réessayer demain.");
+                }
+            }
+        }).catch((error) => {
+            console.error("Erreur lors de la récupération des données utilisateur :", error);
+        });
+    } else {
+        alert("Vous devez être connecté pour récupérer vos gains.");
+    }
+};
+
+// Fonction pour additionner les gains
+function addEarnings(currentBalance, dailyEarnings, weeklyEarnings) {
+    return Number(currentBalance) + Number(dailyEarnings) + Number(weeklyEarnings);
+}
+
+// Fonction pour afficher les informations utilisateur
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        document.getElementById("userEmail").textContent = user.email;
+        const userRef = ref(database, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+            const userData = snapshot.val();
+            if (userData) {
+                const dailyEarnings = calculateTotalEarnings(userData.vipStatus || '0');
+                const weeklyEarnings = dailyEarnings * 7;
+                
+                // Récupérer et convertir le solde en nombre
+                const currentBalance = Number(userData.balance) || 0;
+
+                // Afficher les valeurs
+                document.getElementById("balance").textContent = `XOF ${currentBalance}`;
+                document.getElementById("dailyEarnings").textContent = `${dailyEarnings} XOF`;
+                document.getElementById("weeklyEarnings").textContent = `${weeklyEarnings} XOF`;
+                document.getElementById("vipStatus").textContent = `${userData.vipStatus || '0'}`;
+
+                // Calculer et afficher le total des gains
+                const totalEarnings = addEarnings(currentBalance, dailyEarnings, weeklyEarnings);
+                document.getElementById("totalEarnings").textContent = `Total des gains: XOF ${totalEarnings}`;
+            }
+        });
+    } else {
+        document.getElementById("userEmail").textContent = "non connecté";
+    }
+});
+</script>
+</body>
+</html>

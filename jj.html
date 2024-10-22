@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande de Retrait</title>
+    <style>
+        body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(to bottom, #4CAF50, #FFFFFF); /* Dégradé vert en haut vers blanc en bas */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        }
+        .withdraw-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .balance-section {
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .balance-section h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .balance-section p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .withdraw-details {
+            margin-top: 20px;
+            text-align: left;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="withdraw-container">
+        <div class="balance-section">
+            <h2>Solde Actuel</h2>
+            <p id="currentBalance">XOF 0</p>
+            <p>Horaires de retrait : 8H10 à 19H10</p>
+            <p>Montant minimum de retrait : XOF 600</p>
+        </div>
+        
+        <h2>Demande de Retrait</h2>
+        <form id="withdrawForm">
+            <label for="amount">Montant à retirer (XOF) :</label>
+            <input type="number" id="amount" required min="1">
+
+            <label for="withdrawPassword">Mot de passe de retrait :</label>
+            <input type="password" id="withdrawPassword" required>
+
+            <button type="submit">Soumettre la demande</button>
+        </form>
+
+        <div class="withdraw-details" id="withdrawDetails">
+            <p id="withdrawNumber">Numéro de Retrait : Non lié</p>
+            <p id="operator">Opérateur : Non lié</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, update, push } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
+            authDomain: "ciaxe-727b1.firebaseapp.com",
+            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
+            projectId: "ciaxe-727b1",
+            storageBucket: "ciaxe-727b1.appspot.com",
+            messagingSenderId: "52732576686",
+            appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const database = getDatabase();
+
+        let userBalance = 0;
+
+        // Récupérer le solde de l'utilisateur et les détails du compte de retrait
+        function getUserBalance() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid);
+                onValue(userRef, (snapshot) => {
+                    const data = snapshot.val();
+                    userBalance = data ? data.balance : 0;
+                    document.getElementById('currentBalance').innerText = `XOF ${userBalance}`;
+
+                    // Afficher les détails du compte de retrait
+                    if (data.withdrawalAccount) {
+                        document.getElementById('withdrawNumber').innerText = `Numéro de Retrait : ${data.withdrawalAccount.withdrawNumber}`;
+                        document.getElementById('operator').innerText = `Opérateur : ${data.withdrawalAccount.operator}`;
+                    } else {
+                        document.getElementById('withdrawNumber').innerText = 'Numéro de Retrait : Non lié';
+                        document.getElementById('operator').innerText = 'Opérateur : Non lié';
+                    }
+                });
+            }
+        }
+
+        // Soumettre la demande de retrait
+        document.getElementById('withdrawForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const user = auth.currentUser;
+
+            if (user) {
+                const amountToWithdraw = parseFloat(document.getElementById('amount').value);
+                const withdrawPassword = document.getElementById('withdrawPassword').value;
+
+                if (amountToWithdraw < 600) {
+                    alert("Le montant minimum de retrait est de 600 XOF.");
+                    return;
+                }
+
+                if (amountToWithdraw <= 0) {
+                    alert("Veuillez entrer un montant valide.");
+                    return;
+                }
+
+                // Vérifier si le compte de retrait est lié
+                const withdrawalAccountRef = ref(database, 'users/' + user.uid + '/withdrawalAccount');
+                onValue(withdrawalAccountRef, (snapshot) => {
+                    const withdrawalAccount = snapshot.val();
+                    if (!withdrawalAccount) {
+                        alert("Veuillez lier un compte de retrait avant de soumettre une demande.");
+                        return;
+                    }
+
+                    // Calcul des frais de retrait (2 %)
+                    const withdrawalFee = amountToWithdraw * 0.02;
+                    const finalAmount = amountToWithdraw - withdrawalFee;
+
+                    if (userBalance >= amountToWithdraw) {
+                        const newBalance = userBalance - amountToWithdraw;
+
+                        // Mettre à jour le solde de l'utilisateur et enregistrer l'historique du retrait
+                        const updates = {};
+                        updates['/users/' + user.uid + '/balance'] = newBalance;
+
+                        const withdrawalData = {
+                            amount: finalAmount,
+                            date: new Date().toLocaleString(),
+                            status: 'En attente',
+                            fee: withdrawalFee,
+                            operator: withdrawalAccount.operator // Récupérer l'opérateur lié
+                        };
+
+                        const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
+                        push(withdrawalHistoryRef, withdrawalData).then(() => {
+                            update(ref(database), updates).then(() => {
+                                alert(`Retrait de XOF ${finalAmount} soumis avec succès ! (Frais de XOF ${withdrawalFee} déduits)`);
+                                getUserBalance(); // Mise à jour du solde affiché
+                            }).catch((error) => {
+                                console.error('Erreur lors de la mise à jour du solde :', error);
+                            });
+                        }).catch((error) => {
+                            console.error('Erreur lors de l\'enregistrement du retrait :', error);
+                        });
+                    } else {
+                        alert("Solde insuffisant pour effectuer ce retrait.");
+                    }
+                });
+            } else {
+                alert("Veuillez vous connecter pour effectuer un retrait.");
+            }
+        });
+
+        // Vérifier si l'utilisateur est connecté et récupérer le solde actuel
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                getUserBalance();
+            } else {
+                alert("Vous devez être connecté pour effectuer un retrait.");
+                window.location.href = "login.html";
+            }
+        });
+    </script>
+
+</body>
+</html>

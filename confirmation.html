@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Confirmation de Paiement</title>
+    <style>
+        body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(to bottom, #4CAF50, #FFFFFF); /* Dégradé vert en haut vers blanc en bas */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .info {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
+            text-align: center;
+        }
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        button {
+            padding: 12px;
+            margin-top: 15px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Confirmation de Paiement</h2>
+    <div class="info">
+        <p>Numéro de Paiement Sélectionné: <strong id="paymentNumber"></strong></p>
+        <button id="copyNumber">Copier l'adresse ou le numéro de paiement</button>
+    </div>
+    <form id="confirmationForm">
+        <input type="text" id="paymentInput" name="paymentInput" placeholder="Entrez le numéro de paiement" required>
+        <input type="text" id="transactionId" name="transactionId" placeholder="ID de Transaction" required>
+        <button type="submit">Confirmer</button>
+    </form>
+</div>
+
+<script type="module">
+    // Importez les fonctions Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
+
+    // Configuration Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
+        authDomain: "ciaxe-727b1.firebaseapp.com",
+        databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
+        projectId: "ciaxe-727b1",
+        storageBucket: "ciaxe-727b1.appspot.com",
+        messagingSenderId: "52732576686",
+        appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+    };
+
+    // Initialisation de Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Fonction pour enregistrer les données dans Firebase
+    function savePaymentData(amount, paymentMethod, paymentNumber, transactionId) {
+        const date = new Date().toLocaleString();
+        const paymentId = Date.now(); // Générer un ID unique pour chaque transaction
+
+        // Référence à la base de données
+        set(ref(database, 'recharges/' + paymentId), {
+            amount: amount,
+            paymentMethod: paymentMethod,
+            paymentNumber: paymentNumber,
+            transactionId: transactionId,
+            date: date,
+            status: 'En attente'
+        }).then(() => {
+            alert('Votre paiement a été confirmé et enregistré dans la base de données. Merci !');
+            window.location.href = 'historique-recharge.html';
+        }).catch((error) => {
+            alert('Erreur lors de la confirmation du paiement : ' + error.message);
+        });
+    }
+
+    // Récupérer les paramètres de l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = urlParams.get('amount');
+    const paymentMethod = urlParams.get('paymentMethod');
+    const paymentNumber = decodeURIComponent(urlParams.get('number'));
+
+    document.getElementById('paymentNumber').textContent = paymentNumber;
+    document.getElementById('paymentInput').value = paymentNumber;
+
+    document.getElementById('copyNumber').onclick = function() {
+        navigator.clipboard.writeText(paymentNumber).then(function() {
+            alert('Numéro de paiement copié dans le presse-papiers.');
+        });
+    };
+
+    // Gestion de la soumission du formulaire
+    document.getElementById('confirmationForm').onsubmit = function(event) {
+        event.preventDefault();
+
+        var enteredPaymentNumber = document.getElementById('paymentInput').value;
+        var transactionId = document.getElementById('transactionId').value;
+
+        // Enregistrer les données dans Firebase
+        savePaymentData(amount, paymentMethod, enteredPaymentNumber, transactionId);
+    };
+
+    // Réinitialiser les champs après 14 minutes
+    setTimeout(function() {
+        document.getElementById('paymentInput').value = '';
+        document.getElementById('transactionId').value = '';
+        alert('Les champs ont été réinitialisés après 14 minutes.');
+    }, 14 * 60 * 1000); // 14 minutes en millisecondes
+</script>
+
+</body>
+</html>

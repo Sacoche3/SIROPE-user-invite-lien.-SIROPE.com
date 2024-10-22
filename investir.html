@@ -78,43 +78,58 @@
         }
 
         .fixed-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 95%; /* Changé à 96% pour mieux s'adapter */
-    background-color: #ffffff;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-    box-shadow: 0 -10px 10px rgba(0, 0, 0, 0.1);
-}
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 96%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            box-shadow: 0 -10px 10px rgba(0, 0, 0, 0.1);
+        }
 
-.footer-button {
-    width: 77px; /* Ajustez la largeur pour un carré */
-    height: 40px;
-    background-color: #000000;
-    color: white;
-    border: none;
-    border-radius: 100;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: flex; /* Permet d'aligner le texte au centre */
-    align-items: center; /* Centrer verticalement */
-    justify-content: center; /* Centrer horizontalement */
-}
+        .footer-button {
+            width: 77px;
+            height: 40px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 100;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.footer-button:hover {
-    background-color: #6a8dff;
-}
+        .footer-button:hover {
+            background-color: #6a8dff;
+        }
     </style>
 </head>
 <body>
-    
-    
-
 
     <div class="vip-selection">
-        <!-- VIP Levels -->
+        <!-- VIP 0 -->
+        <div class="vip-level" data-vip="0" data-amount="2000" data-daily-earnings="150" data-cycle="30">
+            <strong>VIP 01 - 1 000 XOF /2 USDT</strong><br>
+            Revenus: 75 XOF/jour<br>
+            Cycle: 19 jours<br>
+            <span class="total-earnings">Revenus Totaux: XOF 1425</span><br>
+            <button class="invest-button" data-vip="0">Investir</button>
+        </div>
+
+        <!-- VIP 01 -->
+        <div class="vip-level" data-vip="01" data-amount="3000" data-daily-earnings="200" data-cycle="30">
+            <strong>VIP 02 - 2 000 XOF /4 USDT</strong><br>
+            Revenus: 175 XOF/jour<br>
+            Cycle: 20 jours<br>
+            <span class="total-earnings">Revenus Totaux: XOF 3 500</span><br>
+            <button class="invest-button" data-vip="01">Investir</button>
+        </div>
+
+        <!-- VIP 1 -->
         <div class="vip-level" data-vip="1" data-amount="5000" data-daily-earnings="300" data-cycle="30">
             <strong>VIP 1 - 5 000 XOF /10 USDT</strong><br>
             Revenus: 300 XOF/jour<br>
@@ -123,11 +138,13 @@
             <button class="invest-button" data-vip="1">Investir</button>
         </div>
 
+        <!-- Les autres niveaux VIP déjà présents -->
+
         <div class="vip-level" data-vip="2" data-amount="10000" data-daily-earnings="500" data-cycle="30">
             <strong>VIP 2 - 10 000 XOF /20 USDT</strong><br>
             Revenus: 500 XOF/jour<br>
             Cycle: 30 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 15 000 </span><br>
+            <span class="total-earnings">Revenus Totaux: XOF 15 000</span><br>
             <button class="invest-button" data-vip="2">Investir</button>
         </div>
 
@@ -139,7 +156,9 @@
             <button class="invest-button" data-vip="3">Investir</button>
         </div>
 
-        <div class="vip-level" data-vip="4" data-amount="30000" data-daily-earnings="1500" data-cycle="30">
+        <!-- Ajoutez les autres niveaux VIP si nécessaire -->
+
+    <div class="vip-level" data-vip="4" data-amount="30000" data-daily-earnings="1500" data-cycle="30">
             <strong>VIP 4 - 30 000 XOF /60 USDT</strong><br>
             Revenus: 1 500 XOF/jour<br>
             Cycle: 30 jours<br>
@@ -190,10 +209,10 @@
         </div>
 
         <div class="vip-level" data-vip="10" data-amount="250000" data-daily-earnings="9900" data-cycle="30">
-            <strong>VIP 10 - 250 000 XOF/500 USDT</strong><br>
+            <strong>VIP 10 - 250 000 XOF/450 USDT</strong><br>
             Revenus: 9 900 XOF/jour<br>
             Cycle: 30 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 297 000</span><br>
+            <span class="total-earnings">Revenus Totaux: XOF 1 297 000</span><br>
             <button class="invest-button" data-vip="10">Investir</button>
         </div>
        

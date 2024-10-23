@@ -197,7 +197,7 @@ window.navigate = function(page) {
 // Calcul des gains en fonction du statut VIP
 function calculateTotalEarnings(vipStatus) {
     const VIP_EARNINGS = {
-        '1': 300, '2': 500, '3': 1000, '4': 1500, '5': 2500,
+       '01': 75, '02': 175, '1': 300, '2': 500, '3': 1000, '4': 1500, '5': 2500,
         '6': 3800, '7': 5000, '8': 6500, '9': 8800, '10': 9900,
     };
     return VIP_EARNINGS[vipStatus] || 0;

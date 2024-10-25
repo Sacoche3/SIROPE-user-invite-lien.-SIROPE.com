@@ -3,212 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page d'Invitation - Équipe</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #2b2eff;
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #4740ff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #fff;
-            margin-bottom: 30px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .section, .button-section {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: center;
-            color: #000000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .section span {
-            display: block;
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 10px;
-            color: #e74c3c;
-        }
-        .button {
-            padding: 15px;
-            font-size: 18px;
-            color: #fff;
-            background-color: #5558ff;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            text-align: center;
-            transition: background-color 0.3s ease;
-        }
-        .button:hover {
-            background-color: #3333ff;
-        }
-        .referral-section, .code-section, .link-section {
-            background-color: #5558ff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .referral-section h2, .code-section h2, .link-section h2 {
-            text-align: center;
-            color: #ffffff;
-            margin-bottom: 15px;
-        }
-        .referral-section p, .code-section p, .link-section p {
-            font-size: 18px;
-            margin: 5px 0;
-            text-align: center;
-            color: #ffffff;
-        }
-        #generatedCode, #generatedLink {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 10px;
-            color: #e74c3c;
-        }
-        .copy-button {
-            padding: 10px;
-            font-size: 16px;
-            color: #000000;
-            background-color: #2ecc71;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            margin-top: 15px;
-        }
-        .copy-button:hover {
-            background-color: #2b2eff;
-        }
-    </style>
-</head>
-<body>
+    <title>Page d'équipe</title>
+    <script type="module">
+        // Configuration Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.19.0/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.19.0/firebase-database.js";
 
-    <div class="container">
-        <h1>Équipe</h1>
-        <div class="grid">
-            <!-- Bouton cliquable Total de l'équipe -->
-            <div class="button-section">
-                <a href="#" class="button" id="totalEquipeBtn">Total de l'équipe <br> <span id="totalEquipe">00</span></a>
-            </div>
-            <!-- Autres sections -->
-            <div class="section">
-                Recharge total de l'équipe
-                <span id="totalRecharge">00 FCFA</span>
-            </div>
-        </div>
-
-        <!-- Section Niveau de Parrainage -->
-        <div class="referral-section">
-            <h2>Niveau de parrainage</h2>
-            <p>Niveau: 10%</p>
-        </div>
-
-        <!-- Section Génération de Code -->
-        <div class="code-section">
-            <h2>Code généré</h2>
-            <p id="generatedCode"></p>
-        </div>
-
-        <!-- Section pour copier le code généré -->
-        <div class="link-section">
-            <h2>Copier le code</h2>
-            <button class="copy-button" onclick="copyCode()">Copier le code</button>
-        </div>
-
-        <!-- Section pour copier un lien -->
-        <div class="link-section">
-            <h2>Copier le lien</h2>
-            <p id="generatedLink">https://sirope-user-invite-lien-sirope-com.vercel.app/</p>
-            <button class="copy-button" onclick="copyLink()">Copier le lien</button>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-
-    <script>
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
             authDomain: "ciaxe-727b1.firebaseapp.com",
+            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
             projectId: "ciaxe-727b1",
             storageBucket: "ciaxe-727b1.appspot.com",
             messagingSenderId: "52732576686",
             appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
         };
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // Initialisation de Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
 
-        // Fonction pour récupérer les données de l'équipe et la recharge totale
-        async function loadData() {
-            const docRef = db.collection('users').doc('user_id'); // Assure-toi d'utiliser le bon ID d'utilisateur
-            const docSnap = await docRef.get();
-            
-            if (docSnap.exists) {
-                const data = docSnap.data();
-                document.getElementById('totalEquipe').textContent = data.totalEquipe;
-                document.getElementById('totalRecharge').textContent = data.totalRecharge + ' FCFA';
+        // Vérifie si un utilisateur est connecté
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadUserData(user.uid);
             } else {
-                console.log("Aucun document trouvé !");
+                window.location.href = '/login.html'; // Redirection si non connecté
             }
-        }
+        });
 
-        // Fonction pour copier le code généré
-        function copyCode() {
-            let code = document.getElementById('generatedCode').textContent;
-            navigator.clipboard.writeText(code).then(function() {
-                alert('Code copié: ' + code);
-            }, function() {
-                alert('Erreur lors de la copie du code.');
+        // Récupère les données utilisateur
+        function loadUserData(userId) {
+            const userRef = ref(database, 'users/' + userId);
+            get(userRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    displayUserData(snapshot.val());
+                } else {
+                    document.getElementById("userEmail").textContent = "Non défini";
+                    document.getElementById("totalTeam").textContent = "0 XOF";
+                    document.getElementById("totalRecharge").textContent = "0 XOF";
+                }
+            }).catch((error) => {
+                console.error('Erreur lors de la récupération des données :', error);
             });
         }
 
-        // Fonction pour copier le lien généré
-        function copyLink() {
-            let link = document.getElementById('generatedLink').textContent;
-            navigator.clipboard.writeText(link).then(function() {
-                alert('Lien copié: ' + link);
-            }, function() {
-                alert('Erreur lors de la copie du lien.');
-            });
+        // Affiche les données utilisateur
+        function displayUserData(userData) {
+            const userEmail = auth.currentUser.email; // Récupère l'email de l'utilisateur connecté
+            document.getElementById("userEmail").textContent = userData.email || userEmail || "Non défini";
+            document.getElementById("totalTeam").textContent = (userData.totalTeam || 0) + ' XOF';
+            document.getElementById("totalRecharge").textContent = (userData.totalRecharge || 0) + ' XOF';
         }
 
-        // Générer un code aléatoire à chaque actualisation
+        // Génère un code aléatoire
         function generateCode() {
-            let code = Math.random().toString(36).substring(2, 10).toUpperCase(); // Code aléatoire
-            document.getElementById('generatedCode').textContent = code;
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                code += characters[randomIndex];
+            }
+            document.getElementById("generatedCode").textContent = code;
         }
 
-        // Générer le code au chargement de la page
-        window.onload = function() {
-            generateCode();
-            loadData();
+        // Copie le code généré dans le presse-papiers
+        window.copyCode = function() {
+            const code = document.getElementById("generatedCode").textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert("Code copié : " + code);
+            }).catch(err => {
+                console.error('Erreur lors de la copie : ', err);
+            });
+        }
+
+        // Copie le lien de parrainage dans le presse-papiers
+        window.copyLink = function() {
+            const link = document.getElementById("bonusLink").textContent; // Le lien à copier
+            navigator.clipboard.writeText(link).then(() => {
+                alert("Lien copié : " + link);
+            }).catch(err => {
+                console.error('Erreur lors de la copie du lien : ', err);
+            });
+        }
+
+        // Initialise les fonctions à charger à l'ouverture de la page
+        window.onload = () => {
+            generateCode(); // Génère un code lorsque la page est chargée
         };
     </script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(to bottom, #4CAF50 50%, #f7f9fc 50%); /* Dégradé vert et blanc */
+            height: 100vh; /* Prendre toute la hauteur de la fenêtre */
+        }
+        .gmail-section {
+            background-color: #000000; /* Section Gmail en noir */
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            display: flex; /* Utilisation de flexbox pour la mise en page */
+            justify-content: space-between;
+            padding: 20px;
+            margin: 10px;
+        }
+        .section {
+            flex: 1; /* Chaque section prend une largeur égale */
+            padding: 20px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: white; /* Fond blanc pour chaque section */
+            text-align: center;
+        }
+        .code-section {
+            background-color: #000000; /* Fond noir pour la section du code généré */
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .link-section {
+            background-color: #000000; /* Fond noir pour la section du lien */
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .copy-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff; /* Couleur du bouton */
+            color: white; 
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .copy-button:hover {
+            background-color: #0056b3; /* Couleur du bouton au survol */
+        }
+        h1 {
+            margin: 0; 
+        }
+        .label { 
+            font-weight: bold; 
+            color: #007bff; 
+        }
+    </style>
+</head>
+<body>
+    <div class="gmail-section">
+        <p><span class="label">Email :</span> <span id="userEmail">Chargement...</span></p>
+    </div>
+    <div class="container">
+        <div class="section">
+            <p><span class="label">Total de l'équipe :</span> <span id="totalTeam">0 XOF</span></p>
+        </div>
+        <div class="section">
+            <p><span class="label">Total de recharge :</span> <span id="totalRecharge">0 XOF</span></p>
+        </div>
+    </div>
+    <div class="code-section">
+        <h2>Code généré :</h2>
+        <p id="generatedCode">XXXXX</p> <!-- Placeholder pour le code généré -->
+        <button class="copy-button" onclick="copyCode()">Copier le code</button>
+    </div>
+    <div class="link-section">
+        <h2>Bonus de parrainage 10 % :</h2>
+        <p id="bonusLink">https://sirope-user-invite-lien-sirope-com.vercel.app</p> <!-- Lien à copier -->
+        <button class="copy-button" onclick="copyLink()">Copier le lien</button>
+    </div>
 
+    <script>
+        // Initialisation du lien de parrainage (modifiez cette partie selon vos besoins)
+        const bonusLink = "https://sirope-user-invite-lien-sirope-com.vercel.app"; // Remplacez par votre lien réel
+        document.getElementById("bonusLink").textContent = bonusLink;
+    </script>
 </body>
 </html>

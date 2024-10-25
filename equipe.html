@@ -54,7 +54,7 @@
         function displayUserData(userData) {
             const userEmail = auth.currentUser.email; // Récupère l'email de l'utilisateur connecté
             document.getElementById("userEmail").textContent = userData.email || userEmail || "Non défini";
-            document.getElementById("totalTeam").textContent = (userData.totalTeam || 0) + ' XOF';
+            document.getElementById("totalTeam").textContent = (userData.totalTeam || 0) + ' ';
             document.getElementById("totalRecharge").textContent = (userData.totalRecharge || 0) + ' XOF';
         }
 
@@ -171,7 +171,7 @@
             <p><span class="label">Total de l'équipe :</span> <span id="totalTeam">0 XOF</span></p>
         </div>
         <div class="section">
-            <p><span class="label">Total de recharge :</span> <span id="totalRecharge">0 XOF</span></p>
+            <p><span class="label"> Recharge total d'équipe :</span> <span id="totalRecharge">0 XOF</span></p>
         </div>
     </div>
     <div class="code-section">

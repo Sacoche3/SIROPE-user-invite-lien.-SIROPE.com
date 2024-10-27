@@ -161,13 +161,15 @@ body {
         <button class="action-button" onclick="navigate('index')">Déconnecte</button>
         <button class="action-button" onclick="navigate('historique-recharge')">Historique Recharge </button>
         <button class="action-button recover-button" onclick="recoverEarnings()">Chate </button>
+        
+        <button class="action-button" onclick="navigate('equipe')">mon équipe</button>
     </div>
 
     <div class="fixed-footer">
-        <button class="footer-button" onclick="navigate('balance')">Home</button>
-        <button class="footer-button" onclick="navigate('historique_retrait')">History</button>
-        <button class="footer-button" onclick="navigate('equipe')">Team</button>
-        <button class="footer-button" onclick="navigate('investir')">Invested</button>
+        <button class="footer-button" onclick="navigate('accueil')">accueil</button>
+        <button class="footer-button" onclick="navigate('historique_retrait')">Historique</button>
+        <button class="footer-button" onclick="navigate('investir')">investir</button>
+        <button class="footer-button" onclick="navigate('balance')">compte</button>
     </div>
    <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
@@ -197,7 +199,7 @@ window.navigate = function(page) {
 // Calcul des gains en fonction du statut VIP
 function calculateTotalEarnings(vipStatus) {
     const VIP_EARNINGS = {
-       '01': 75, '02': 175, '1': 300, '2': 500, '3': 1000, '4': 1500, '5': 2500,
+        '1': 300, '2': 500, '3': 1000, '4': 1500, '5': 2500,
         '6': 3800, '7': 5000, '8': 6500, '9': 8800, '10': 9900,
     };
     return VIP_EARNINGS[vipStatus] || 0;

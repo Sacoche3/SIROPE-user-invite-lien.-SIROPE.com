@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Accueil</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --text-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to top, white 50%, #00ff00 50%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-y: scroll;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2em;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .carousel img.active {
+            opacity: 1;
+        }
+
+        .description {
+            text-align: center;
+            font-size: 1em;
+            color: var(--text-color);
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            box-shadow: 0 -10px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-button {
+            width: 70px;
+            height: 40px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-button:hover {
+            background-color: #6a8dff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>SOYEZ LA BIENVENUE SUR SIROPE </h1>
+    </div>
+
+    <div class="gallery">
+        <!-- Première section avec carrousel -->
+        <div class="carousel">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729991253-images-4.jpeg" alt="Image 1" class="active">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729991297-dji-0036.jpg" alt="Image 2">
+        </div>
+        <div class="description">Chez SIROPE, nous croyons que la transparence est la clé d'une relation de confiance. Notre plateforme vous offre une vue d'ensemble claire et détaillée de vos investissements, avec des rapports accessibles à tout moment. Vous pouvez suivre la performance de vos projets en temps réel, vous assurant ainsi que votre argent travaille pour vous.</div>
+
+        <!-- Deuxième section avec carrousel -->
+        <div class="carousel">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729991660-picsart-24-10-27-01-14-10-440.jpg" alt="Image 3" class="active">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729991833-picsart-24-10-27-01-17-03-344.jpg" alt="Image 4">
+        </div>
+        <div class="description">Avec une équipe d'experts chevronnés dans le domaine de l'investissement, SIROPE vous propose des opportunités soigneusement sélectionnées. Nos analystes réalisent des études approfondies sur chaque projet, garantissant que vous investissez dans des options à fort potentiel et à faible risque. Votre succès est notre priorité.</div>
+
+        <!-- Troisième section avec carrousel -->
+        <div class="carousel">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729991870-images-11.jpeg" alt="Image 5" class="active">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729991912-dji-0036.jpg" alt="Image 6">
+        </div>
+        <div class="description">La sécurité de vos données et de vos investissements est notre priorité absolue. SIROPE utilise les dernières technologies de cryptage et de protection des données pour garantir que vos informations personnelles et financières sont entièrement sécurisées. Investissez en toute sérénité, sachant que vous êtes protégé contre toute menace potentielle.</div>
+
+        <!-- Quatrième section avec carrousel -->
+        <div class="carousel">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729992082-images-10.jpeg" alt="Image 7" class="active">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729992111-images-6.jpeg" alt="Image 8">
+        </div>
+        <div class="description">Notre service client est là pour vous aider à chaque étape de votre parcours d'investissement. Que vous ayez des questions sur nos services ou que vous ayez besoin d'assistance, notre équipe est disponible 24/7 pour vous fournir des réponses et des conseils adaptés à vos besoins. Avec SIROPE, vous n’êtes jamais seul.</div>
+
+        <!-- Cinquième section avec carrousel -->
+        <div class="carousel">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729992144-images-5.jpeg" alt="Image 9" class="active">
+            <img src="https://image.noelshack.com/fichiers/2024/43/7/1729992172-images-1.png" alt="Image 10">
+        </div>
+        <div class="description">Rejoindre SIROPE, c'est entrer dans une communauté d'investisseurs passionnés et engagés. Participez à des discussions, partagez vos expériences et apprenez des autres. Nous organisons régulièrement des webinaires et des événements, vous offrant l'occasion de vous connecter avec d'autres investisseurs et d'enrichir vos connaissances. Ensemble, nous atteignons des sommets!</div>
+    </div>
+
+    <div class="footer">
+        <button class="footer-button" onclick="navigate('#')">accueil</button>
+        <button class="footer-button" onclick="navigate('historique_retrait')">Historique</button>
+        <button class="footer-button" onclick="navigate('investir')">investir</button>
+        <button class="footer-button" onclick="navigate('balance')">compte</button>
+    </div>
+
+    <script>
+        function navigate(page) {
+            window.location.href = page + '.html';
+        }
+
+        // Fonction pour gérer le changement d'images
+        function startCarousel() {
+            const carousels = document.querySelectorAll('.carousel');
+
+            carousels.forEach(carousel => {
+                let images = carousel.querySelectorAll('img');
+                let currentIndex = 0;
+
+                setInterval(() => {
+                    images[currentIndex].classList.remove('active');
+                    currentIndex = (currentIndex + 1) % images.length;
+                    images[currentIndex].classList.add('active');
+                }, 1500); // Changer toutes les 1.5 secondes
+            });
+        }
+
+        // Lancer le carrousel au chargement de la page
+        window.onload = startCarousel;
+    </script>
+
+</body>
+</html>

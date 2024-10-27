@@ -59,6 +59,15 @@
         .vip-level .total-earnings {
             font-weight: bold;
             color: #ff6f61;
+            animation: colorChange 2s infinite; /* Ajout de l'animation de changement de couleur */
+        }
+
+        @keyframes colorChange {
+            0% { color: #ff6f61; }
+            25% { color: #4CAF50; }
+            50% { color: #ff9800; }
+            75% { color: #2196F3; }
+            100% { color: #ff6f61; }
         }
 
         .invest-button {
@@ -120,7 +129,7 @@
             <button class="invest-button" data-vip="01">Investir</button>
         </div>
         
-    <!-- VIP 02 -->
+        <!-- VIP 02 -->
         <div class="vip-level" data-vip="02" data-amount="2500" data-daily-earnings="250" data-cycle="30">
             <strong>VIP 02 - 2 500 XOF /5 USDT</strong><br>
             Revenus: 250 XOF/jour<br>
@@ -128,11 +137,10 @@
             <span class="total-earnings">Revenus Totaux: XOF 7 500</span><br>
             <button class="invest-button" data-vip="02">Investir</button>
         </div>
-    
-
+        
         <!-- VIP 03 -->
         <div class="vip-level" data-vip="03" data-amount="3500" data-daily-earnings="350" data-cycle="23">
-            <strong>VIP 04 - 3 500 XOF /7 USDT</strong><br>
+            <strong>VIP 03 - 3 500 XOF /7 USDT</strong><br>
             Revenus: 350 XOF/jour<br>
             Cycle: 23 jours<br>
             <span class="total-earnings">Revenus Totaux: XOF 8 050</span><br>
@@ -168,7 +176,7 @@
 
         <!-- Ajoutez les autres niveaux VIP si nécessaire -->
 
-    <div class="vip-level" data-vip="4" data-amount="30000" data-daily-earnings="1500" data-cycle="30">
+        <div class="vip-level" data-vip="4" data-amount="30000" data-daily-earnings="1500" data-cycle="30">
             <strong>VIP 4 - 30 000 XOF /60 USDT</strong><br>
             Revenus: 1 500 XOF/jour<br>
             Cycle: 30 jours<br>
@@ -176,9 +184,7 @@
             <button class="invest-button" data-vip="4">Investir</button>
         </div>
 
-        <div class="vip-level" data-vip="5" data-amount="50000" data-daily-earnings="2500" data-cycle="30"><!
-        
-        </head>
+        <div class="vip-level" data-vip="5" data-amount="50000" data-daily-earnings="2500" data-cycle="30">
             <strong>VIP 5 - 50 000 XOF /100 USDT</strong><br>
             Revenus: 2 500 XOF/jour<br>
             Cycle: 30 jours<br>
@@ -187,7 +193,7 @@
         </div>
 
         <div class="vip-level" data-vip="6" data-amount="75000" data-daily-earnings="3800" data-cycle="30">
-            <strong>VIP 6 - 75 000 XOF/150 USDT </strong><br>
+            <strong>VIP 6 - 75 000 XOF /150 USDT</strong><br>
             Revenus: 3 800 XOF/jour<br>
             Cycle: 30 jours<br>
             <span class="total-earnings">Revenus Totaux: XOF 114 000</span><br>
@@ -203,7 +209,7 @@
         </div>
 
         <div class="vip-level" data-vip="8" data-amount="150000" data-daily-earnings="6500" data-cycle="30">
-            <strong>VIP 8 - 150 000 XOF 300 USDT</strong><br>
+            <strong>VIP 8 - 150 000 XOF /300 USDT</strong><br>
             Revenus: 6 500 XOF/jour<br>
             Cycle: 30 jours<br>
             <span class="total-earnings">Revenus Totaux: XOF 195 000</span><br>
@@ -219,20 +225,38 @@
         </div>
 
         <div class="vip-level" data-vip="10" data-amount="250000" data-daily-earnings="9900" data-cycle="30">
-            <strong>VIP 10 - 250 000 XOF/500 USDT</strong><br>
+            <strong>VIP 10 - 250 000 XOF /500 USDT</strong><br>
             Revenus: 9 900 XOF/jour<br>
             Cycle: 30 jours<br>
             <span class="total-earnings">Revenus Totaux: XOF 1 297 000</span><br>
             <button class="invest-button" data-vip="10">Investir</button>
         </div>
-       
+    </div>
+
     <div class="fixed-footer">
         <button class="footer-button" onclick="navigate('accueil')">accueil</button>
         <button class="footer-button" onclick="navigate('historique_retrait')">Historique</button>
         <button class="footer-button" onclick="navigate('investir')">investir</button>
-        <button class="footer-button" onclick="navigate('balance')">compte</button></button>
+        <button class="footer-button" onclick="navigate('balance')">compte</button>
     </div>
 
+    <script>
+        // Fonction pour changer rapidement les couleurs de la section des revenus
+        const earningsSections = document.querySelectorAll('.total-earnings');
+        const colors = ['#ff6f61', '#4CAF50', '#ff9800', '#2196F3', '#9c27b0'];
+
+        setInterval(() => {
+            earningsSections.forEach(section => {
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                section.style.color = randomColor;
+            });
+        }, 500); // Changer de couleur toutes les 500 ms
+
+        function navigate(page) {
+            // Remplacez ce code par la logique de navigation réelle
+            console.log(`Navigation vers ${page}`);
+        }
+    </script>
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";

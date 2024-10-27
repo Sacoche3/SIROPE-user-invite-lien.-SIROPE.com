@@ -13,15 +13,35 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 80vh;
-            flex-direction: column;
+            height: 100vh; /* Ajusté pour prendre toute la hauteur */
             overflow: hidden;
+            position: relative;
         }
 
-        .logo {
-            width: 150px;
-            height: auto;
-            margin-bottom: 20px;
+        .circle {
+            position: absolute;
+            width: 400px; /* Taille du cercle */
+            height: 400px; /* Taille du cercle */
+            border-radius: 50%; /* Cercle */
+            border: 15px solid transparent; /* Espace entre le cercle et le formulaire */
+            background: conic-gradient(
+                #FF5733,
+                #33FF57,
+                #3357FF,
+                #FF33A6,
+                #FF5733
+            ); /* Dégradé de couleurs */
+            animation: spin 5s linear infinite; /* Animation de rotation */
+            z-index: 1; /* Assurez-vous que le cercle est derrière le formulaire */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .form-container {
@@ -30,17 +50,8 @@
             padding: 30px;
             width: 350px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: scale(0.8);
-            transition: transform 0.5s ease-in-out;
-        }
-
-        .form-container.active {
-            transform: scale(1); /* Transition de mise à l'échelle lors de l'activation */
-        }
-        }
-
-        .form-container.active {
-            transform: scale(1);
+            z-index: 2; /* Assurez-vous que le formulaire est au-dessus du cercle */
+            position: relative; /* Positionnement relatif pour empiler correctement */
         }
 
         h2 {
@@ -93,7 +104,8 @@
 </head>
 <body>
 
-    
+    <!-- Cercle tournant -->
+    <div class="circle"></div>
 
     <!-- Formulaire de Connexion -->
     <div id="loginForm" class="form-container active">
@@ -209,7 +221,7 @@
                         referralCode: referralCode
                     }).then(() => {
                         alert("Inscription réussie !");
-                        window.location.href = "balance.html"; // Redirection vers une page après l'inscription
+                        window.location.href = "accueil.html"; // Redirection vers une page après l'inscription
                     }).catch((error) => {
                         console.error("Erreur de la base de données:", error);
                         alert("Erreur lors de l'ajout des informations : " + error.message);
@@ -222,21 +234,22 @@
         };
 
         // Fonction de connexion avec Firebase
-        window.handleLogin = function(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+            window.handleLogin = function(event) {
+                event.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    alert("Connexion réussie !");
-                    window.location.href = "balance.html"; // Redirection après connexion
-                })
-                .catch((error) => {
-                    console.error("Erreur de connexion:", error);
-                    alert(error.message);
-                });
-        };
-    </script>
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        alert("Connexion réussie !");
+                        window.location.href = "accueil.html"; // Redirection vers une page après la connexion
+                    })
+                    .catch((error) => {
+                        console.error("Erreur de connexion:", error);
+                        alert(error.message);
+                    });
+            };
+        </script>
 </body>
 </html>

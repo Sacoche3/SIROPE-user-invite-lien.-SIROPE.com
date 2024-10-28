@@ -13,35 +13,30 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh; /* Ajusté pour prendre toute la hauteur */
+            height: 100vh;
             overflow: hidden;
             position: relative;
         }
 
         .circle {
             position: absolute;
-            width: 400px; /* Taille du cercle */
-            height: 400px; /* Taille du cercle */
-            border-radius: 50%; /* Cercle */
-            border: 15px solid transparent; /* Espace entre le cercle et le formulaire */
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
             background: conic-gradient(
                 #FF5733,
                 #33FF57,
                 #3357FF,
                 #FF33A6,
                 #FF5733
-            ); /* Dégradé de couleurs */
-            animation: spin 5s linear infinite; /* Animation de rotation */
-            z-index: 1; /* Assurez-vous que le cercle est derrière le formulaire */
+            );
+            animation: spin 5s linear infinite;
+            z-index: 1;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .form-container {
@@ -50,8 +45,8 @@
             padding: 30px;
             width: 350px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 2; /* Assurez-vous que le formulaire est au-dessus du cercle */
-            position: relative; /* Positionnement relatif pour empiler correctement */
+            z-index: 2;
+            position: relative;
         }
 
         h2 {
@@ -129,12 +124,20 @@
             <button type="submit">S'inscrire</button>
         </form>
         <button id="btnLogin">Se connecter</button>
+        
+        <!-- Lien de parrainage -->
+        <p id="referralLinkContainer" style="display: none;">
+            Votre lien de parrainage : 
+            <span id="referralLink"></span>
+        </p>
     </div>
 
     <script>
         // Gestion des formulaires
         const loginForm = document.getElementById('loginForm');
         const signupForm = document.getElementById('signupForm');
+        const referralLinkContainer = document.getElementById('referralLinkContainer');
+        const referralLink = document.getElementById('referralLink');
 
         document.getElementById('btnSignup').addEventListener('click', function() {
             loginForm.classList.remove('active');
@@ -159,6 +162,14 @@
                 code += characters.charAt(Math.floor(Math.random() * characters.length));
             }
             document.getElementById('generatedReferralCode').value = code;
+            updateReferralLink(code); // Met à jour l'URL de parrainage
+        }
+
+        // Fonction pour mettre à jour le lien de parrainage
+        function updateReferralLink(code) {
+            const baseUrl = "https://example.com/register?ref="; // Remplacez par l'URL de votre choix
+            referralLink.textContent = baseUrl + code;
+            referralLinkContainer.style.display = "block"; // Affiche le lien
         }
 
         // Fonction d'inscription
@@ -189,13 +200,13 @@
 
         // Configuration de Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
-            authDomain: "ciaxe-727b1.firebaseapp.com",
-            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
-            projectId: "ciaxe-727b1",
-            storageBucket: "ciaxe-727b1.appspot.com",
-            messagingSenderId: "52732576686",
-            appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+            apiKey: "votre_api_key",
+            authDomain: "votre_auth_domain",
+            databaseURL: "votre_database_url",
+            projectId: "votre_project_id",
+            storageBucket: "votre_storage_bucket",
+            messagingSenderId: "votre_messaging_sender_id",
+            appId: "votre_app_id"
         };
 
         // Initialiser Firebase
@@ -250,6 +261,6 @@
                         alert(error.message);
                     });
             };
-        </script>
+    </script>
 </body>
 </html>

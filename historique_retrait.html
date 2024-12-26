@@ -243,371 +243,158 @@
         </div>
     </div>
 
-    <!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historique des Retraits</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1a1f25 0%, #2f3c4c 100%);
-            color: #fff;
-            padding: 2rem;
-        }
-
-        .container {
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .dashboard-header {
-            margin-bottom: 2rem;
-            text-align: center;
-            position: relative;
-        }
-
-        .dashboard-header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #00f260 0%, #0575e6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .stat-title {
-            font-size: 1.1rem;
-            color: #94a3b8;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .history-container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-        }
-
-        .history-header {
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.03);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .history-header h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-
-        .history-item {
-            padding: 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: grid;
-            grid-template-columns: 1fr auto auto;
-            gap: 3rem;
-            align-items: center;
-            transition: background-color 0.3s ease;
-        }
-
-        .history-item:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .transaction-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
-        .amount {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #00f260;
-        }
-
-        .date, .fee {
-            font-size: 1rem;
-            color: #94a3b8;
-        }
-
-        .status-badge {
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 500;
-            background: rgba(0, 242, 96, 0.1);
-            color: #00f260;
-            border: 1px solid rgba(0, 242, 96, 0.2);
-        }
-
-        .delete-button {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 1rem;
-        }
-
-        .delete-button:hover {
-            background: rgba(239, 68, 68, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .empty-state {
-            padding: 6rem 2rem;
-            text-align: center;
-            color: #94a3b8;
-            font-size: 1.2rem;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #00f260 0%, #0575e6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        @media (max-width: 1200px) {
-            .history-item {
-                gap: 2rem;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-
-            .dashboard-header h1 {
-                font-size: 2rem;
-            }
-
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-
-            .history-item {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .status-badge {
-                justify-self: start;
-            }
-            
-            .delete-button {
-                justify-content: center;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="dashboard-header">
-            <h1>Historique des Transactions</h1>
-        </div>
-
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-title">Total Retiré</div>
-                <div class="stat-value" id="totalWithdrawn">XOF 0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Total des Frais</div>
-                <div class="stat-value" id="totalFees">XOF 0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Nombre de Retraits</div>
-                <div class="stat-value" id="totalTransactions">0</div>
-            </div>
-        </div>
-
-        <div class="history-container">
-            <div class="history-header">
-                <h2>Détails des Transactions</h2>
-            </div>
-            <div id="withdrawalHistory"></div>
-        </div>
-    </div>
-
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
-            authDomain: "ciaxe-727b1.firebaseapp.com",
-            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
-            projectId: "ciaxe-727b1",
-            storageBucket: "ciaxe-727b1.appspot.com",
-            messagingSenderId: "52732576686",
-            appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
+        authDomain: "ciaxe-727b1.firebaseapp.com",
+        databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
+        projectId: "ciaxe-727b1",
+        storageBucket: "ciaxe-727b1.appspot.com",
+        messagingSenderId: "52732576686",
+        appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-        const database = getDatabase();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const database = getDatabase();
 
-        function formatDate(dateString) {
-            const options = { 
+    function formatDate(timestamp) {
+        // Vérifie si timestamp est un nombre (timestamp Unix)
+        if (typeof timestamp === 'number') {
+            // Convertit le timestamp en millisecondes si nécessaire
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('fr-FR', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
-            };
-            return new Date(dateString).toLocaleDateString('fr-FR', options);
+            });
+        }
+        // Si c'est une chaîne ISO, on l'utilise directement
+        try {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            console.error('Erreur de format de date:', e);
+            return 'Date non disponible';
+        }
+    }
+
+    function updateStats(data) {
+        let totalWithdrawn = 0;
+        let totalFees = 0;
+        let totalTransactions = 0;
+
+        if (data) {
+            Object.values(data).forEach(item => {
+                totalWithdrawn += Number(item.amount || 0);
+                totalFees += Number(item.fee || 0);
+                totalTransactions++;
+            });
         }
 
-        function updateStats(data) {
-            let totalWithdrawn = 0;
-            let totalFees = 0;
-            let totalTransactions = 0;
+        document.getElementById('totalWithdrawn').textContent = `XOF ${totalWithdrawn.toLocaleString()}`;
+        document.getElementById('totalFees').textContent = `XOF ${totalFees.toLocaleString()}`;
+        document.getElementById('totalTransactions').textContent = totalTransactions;
+    }
 
-            if (data) {
-                Object.values(data).forEach(item => {
-                    totalWithdrawn += Number(item.amount);
-                    totalFees += Number(item.fee);
-                    totalTransactions++;
-                });
-            }
+    function loadWithdrawalHistory() {
+        const user = auth.currentUser;
+        if (user) {
+            const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
+            onValue(withdrawalHistoryRef, (snapshot) => {
+                const historyContainer = document.getElementById('withdrawalHistory');
+                historyContainer.innerHTML = '';
 
-            document.getElementById('totalWithdrawn').textContent = `XOF ${totalWithdrawn.toLocaleString()}`;
-            document.getElementById('totalFees').textContent = `XOF ${totalFees.toLocaleString()}`;
-            document.getElementById('totalTransactions').textContent = totalTransactions;
-        }
+                const data = snapshot.val();
+                updateStats(data);
 
-        function loadWithdrawalHistory() {
-            const user = auth.currentUser;
-            if (user) {
-                const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
-                onValue(withdrawalHistoryRef, (snapshot) => {
-                    const historyContainer = document.getElementById('withdrawalHistory');
-                    historyContainer.innerHTML = '';
+                if (data) {
+                    // Trier les transactions par date (plus récentes en premier)
+                    const sortedTransactions = Object.entries(data).sort((a, b) => {
+                        const dateA = new Date(a[1].date);
+                        const dateB = new Date(b[1].date);
+                        return dateB - dateA;
+                    });
 
-                    const data = snapshot.val();
-                    updateStats(data);
+                    sortedTransactions.forEach(([key, historyItem]) => {
+                        const div = document.createElement('div');
+                        div.classList.add('history-item');
 
-                    if (data) {
-                        Object.keys(data).forEach((key) => {
-                            const historyItem = data[key];
-                            const div = document.createElement('div');
-                            div.classList.add('history-item');
-                            div.innerHTML = `
-                                <div class="transaction-info">
-                                    <div class="amount">XOF ${Number(historyItem.amount).toLocaleString()}</div>
-                                    <div class="fee">Frais: XOF ${Number(historyItem.fee).toLocaleString()}</div>
-                                    <div class="date">
-                                        <i class="far fa-calendar-alt"></i>
-                                        ${formatDate(historyItem.date)}
-                                    </div>
+                        // Formater les nombres avec la fonction toLocaleString
+                        const amount = Number(historyItem.amount || 0).toLocaleString();
+                        const fee = Number(historyItem.fee || 0).toLocaleString();
+                        
+                        // Formater la date
+                        const formattedDate = formatDate(historyItem.date);
+
+                        div.innerHTML = `
+                            <div class="transaction-info">
+                                <div class="amount">XOF ${amount}</div>
+                                <div class="fee">Frais: XOF ${fee}</div>
+                                <div class="date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    ${formattedDate}
                                 </div>
-                                <div class="status-badge">${historyItem.status}</div>
-                                <button class="delete-button" data-id="${key}">
-                                    <i class="fas fa-trash-alt"></i>
-                                    Supprimer
-                                </button>
-                            `;
-                            historyContainer.appendChild(div);
-                        });
-
-                        document.querySelectorAll('.delete-button').forEach((button) => {
-                            button.addEventListener('click', (event) => {
-                                const target = event.target.closest('.delete-button');
-                                if (target && confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?')) {
-                                    const withdrawalId = target.getAttribute('data-id');
-                                    deleteWithdrawal(withdrawalId);
-                                }
-                            });
-                        });
-                    } else {
-                        historyContainer.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-history"></i>
-                                <p>Aucune transaction n'a été effectuée</p>
                             </div>
+                            <div class="status-badge">${historyItem.status || 'En attente'}</div>
+                            <button class="delete-button" data-id="${key}">
+                                <i class="fas fa-trash-alt"></i>
+                                Supprimer
+                            </button>
                         `;
-                    }
-                });
-            }
-        }
+                        historyContainer.appendChild(div);
+                    });
 
-        function deleteWithdrawal(withdrawalId) {
-            const user = auth.currentUser;
-            if (user) {
-                const withdrawalRef = ref(database, 'users/' + user.uid + '/withdrawalHistory/' + withdrawalId);
-                remove(withdrawalRef).catch((error) => {
-                    alert('Erreur lors de la suppression: ' + error.message);
-                });
-            }
+                    document.querySelectorAll('.delete-button').forEach((button) => {
+                        button.addEventListener('click', (event) => {
+                            const target = event.target.closest('.delete-button');
+                            if (target && confirm('Êtes-vous sûr de vouloir supprimer cette transaction ?')) {
+                                const withdrawalId = target.getAttribute('data-id');
+                                deleteWithdrawal(withdrawalId);
+                            }
+                        });
+                    });
+                } else {
+                    historyContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>Aucune transaction n'a été effectuée</p>
+                        </div>
+                    `;
+                }
+            });
         }
+    }
 
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                loadWithdrawalHistory();
-            } else {
-                window.location.href = "login.html";
-            }
-        });
-    </script>
+    function deleteWithdrawal(withdrawalId) {
+        const user = auth.currentUser;
+        if (user) {
+            const withdrawalRef = ref(database, 'users/' + user.uid + '/withdrawalHistory/' + withdrawalId);
+            remove(withdrawalRef).catch((error) => {
+                alert('Erreur lors de la suppression: ' + error.message);
+            });
+        }
+    }
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            loadWithdrawalHistory();
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+</script>
 </body>
 </html>

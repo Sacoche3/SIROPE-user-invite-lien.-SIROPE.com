@@ -2,153 +2,207 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Confirmation de Paiement</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de paiement</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
         body {
-        font-family: 'Roboto', sans-serif;
-        margin: 0;
-        padding: 20px;
-        background: linear-gradient(to bottom, #4CAF50, #FFFFFF); /* Dégradé vert en haut vers blanc en bas */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+            background-color: #f5f5f5;
         }
+
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
         }
-        h2 {
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .title {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
             color: #333;
-            margin-bottom: 20px;
             text-align: center;
+        }
+
+        .account-info {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .copy-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .copy-button:hover {
+            background: #218838;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .button:hover {
+            background: #0056b3;
+        }
+
+        .timer {
+            text-align: center;
+            margin-top: 1rem;
+            color: #dc3545;
             font-weight: bold;
         }
-        .info {
-            margin-bottom: 20px;
-            font-size: 16px;
-            color: #555;
-            text-align: center;
-        }
-        input {
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 14px;
-            box-sizing: border-box;
-            width: 100%;
-        }
-        button {
-            padding: 12px;
-            margin-top: 15px;
-            background-color: #007bff;
-            color: #ffffff;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #0056b3;
+
+        .operator-info {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: #666;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="card">
+            <h1 class="title">Confirmation de paiement</h1>
 
-<div class="container">
-    <h2>Confirmation de Paiement</h2>
-    <div class="info">
-        <p>Numéro de Paiement Sélectionné: <strong id="paymentNumber"></strong></p>
-        <button id="copyNumber">Copier l'adresse ou le numéro de paiement</button>
+            <div class="operator-info">
+                <p>Opérateur: <span id="operatorName"></span></p>
+                <p>Montant: <span id="amount"></span> FCFA</p>
+            </div>
+
+            <div class="account-info">
+                <div>
+                    <p>Numéro de paiement:</p>
+                    <p class="account-number" id="paymentNumber"></p>
+                </div>
+                <button class="copy-button" id="copyButton">Copier</button>
+            </div>
+
+            <form id="confirmationForm">
+                <div class="form-group">
+                    <label>ID de transaction</label>
+                    <input type="text" class="input" required placeholder="Entrez l'ID de transaction">
+                </div>
+
+                <div class="form-group">
+                    <label>Preuve de paiement</label>
+                    <input type="file" class="input" required accept="image/*">
+                </div>
+
+                <button type="submit" class="button">Confirmer</button>
+            </form>
+
+            <div class="timer" id="timer">Temps restant: 10:00</div>
+        </div>
     </div>
-    <form id="confirmationForm">
-        <input type="text" id="paymentInput" name="paymentInput" placeholder="Entrez le numéro de paiement" required>
-        <input type="text" id="transactionId" name="transactionId" placeholder="ID de Transaction" required>
-        <button type="submit">Confirmer</button>
-    </form>
-</div>
 
-<script type="module">
-    // Importez les fonctions Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
+    <script>
+        // Récupération des données de la transaction
+        const transactionData = JSON.parse(localStorage.getItem('transactionData'));
 
-    // Configuration Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
-        authDomain: "ciaxe-727b1.firebaseapp.com",
-        databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
-        projectId: "ciaxe-727b1",
-        storageBucket: "ciaxe-727b1.appspot.com",
-        messagingSenderId: "52732576686",
-        appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
-    };
+        // Affichage des informations
+        document.getElementById('operatorName').textContent = transactionData.operator;
+        document.getElementById('amount').textContent = transactionData.amount;
+        document.getElementById('paymentNumber').textContent = transactionData.number;
 
-    // Initialisation de Firebase
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-
-    // Fonction pour enregistrer les données dans Firebase
-    function savePaymentData(amount, paymentMethod, paymentNumber, transactionId) {
-        const date = new Date().toLocaleString();
-        const paymentId = Date.now(); // Générer un ID unique pour chaque transaction
-
-        // Référence à la base de données
-        set(ref(database, 'recharges/' + paymentId), {
-            amount: amount,
-            paymentMethod: paymentMethod,
-            paymentNumber: paymentNumber,
-            transactionId: transactionId,
-            date: date,
-            status: 'En attente'
-        }).then(() => {
-            alert('Votre paiement a été confirmé et enregistré dans la base de données. Merci !');
-            window.location.href = 'historique-recharge.html';
-        }).catch((error) => {
-            alert('Erreur lors de la confirmation du paiement : ' + error.message);
+        // Fonction de copie du numéro
+        document.getElementById('copyButton').addEventListener('click', () => {
+            navigator.clipboard.writeText(transactionData.number)
+                .then(() => {
+                    const button = document.getElementById('copyButton');
+                    button.textContent = 'Copié !';
+                    setTimeout(() => {
+                        button.textContent = 'Copier';
+                    }, 2000);
+                });
         });
-    }
 
-    // Récupérer les paramètres de l'URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const amount = urlParams.get('amount');
-    const paymentMethod = urlParams.get('paymentMethod');
-    const paymentNumber = decodeURIComponent(urlParams.get('number'));
+        // Timer
+        let timeLeft = 600; // 10 minutes
+        const timerElement = document.getElementById('timer');
+        
+        const timerId = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = 
+                `Temps restant: ${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-    document.getElementById('paymentNumber').textContent = paymentNumber;
-    document.getElementById('paymentInput').value = paymentNumber;
+            if (timeLeft <= 0) {
+                clearInterval(timerId);
+                alert('Temps écoulé ! La transaction a été annulée.');
+                window.location.href = 'index.html';
+            }
+        }, 1000);
 
-    document.getElementById('copyNumber').onclick = function() {
-        navigator.clipboard.writeText(paymentNumber).then(function() {
-            alert('Numéro de paiement copié dans le presse-papiers.');
+        // Formulaire de confirmation
+        document.getElementById('confirmationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            clearInterval(timerId);
+            
+            // Stockage des données pour l'historique
+            transactionData.status = 'Confirmé';
+            const history = JSON.parse(localStorage.getItem('transactionHistory') || '[]');
+            history.unshift(transactionData);
+            localStorage.setItem('transactionHistory', JSON.stringify(history));
+
+            // Redirection vers la page d'historique
+            window.location.href = 'history.html';
         });
-    };
-
-    // Gestion de la soumission du formulaire
-    document.getElementById('confirmationForm').onsubmit = function(event) {
-        event.preventDefault();
-
-        var enteredPaymentNumber = document.getElementById('paymentInput').value;
-        var transactionId = document.getElementById('transactionId').value;
-
-        // Enregistrer les données dans Firebase
-        savePaymentData(amount, paymentMethod, enteredPaymentNumber, transactionId);
-    };
-
-    // Réinitialiser les champs après 14 minutes
-    setTimeout(function() {
-        document.getElementById('paymentInput').value = '';
-        document.getElementById('transactionId').value = '';
-        alert('Les champs ont été réinitialisés après 14 minutes.');
-    }, 14 * 60 * 1000); // 14 minutes en millisecondes
-</script>
-
+    </script>
 </body>
 </html>

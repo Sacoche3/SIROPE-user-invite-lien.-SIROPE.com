@@ -29,7 +29,6 @@
             padding-bottom: 89px;
         }
 
-        /* Style amélioré pour la section VIP */
         .vip-container {
             background: linear-gradient(45deg, #ffd700, #ffa500);
             color: #fff;
@@ -58,7 +57,6 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
         }
 
-        /* Style amélioré pour la section email */
         .email-section {
             background: linear-gradient(45deg, #1890ff, #36cfc9);
             color: white;
@@ -75,7 +73,6 @@
             font-size: 1.8em;
         }
 
-        /* Style amélioré pour la section solde */
         .balance-container {
             background: white;
             color: var(--text-color);
@@ -135,7 +132,6 @@
             margin-bottom: 5px;
         }
 
-        /* Style des boutons d'action (inchangé) */
         .action-buttons {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -182,7 +178,6 @@
             color: white;
         }
 
-        /* Footer (inchangé) */
         .fixed-footer {
             position: fixed;
             bottom: 0;
@@ -229,9 +224,36 @@
             transform: translateY(-2px);
         }
 
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 320px) {
             .action-buttons {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                grid-template-columns: 1fr;
             }
             
             .action-button {
@@ -246,6 +268,10 @@
     </style>
 </head>
 <body>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
     <div class="vip-container">
         <i class="fas fa-crown"></i>
         <div class="vip-content">
@@ -265,7 +291,7 @@
     <div class="balance-container">
         <i class="fas fa-wallet balance-icon"></i>
         <h2>Votre Solde</h2>
-        <div id="balance" class="balance">XOF </div>
+        <div id="balance" class="balance">XOF 0</div>
         <div class="earnings-info">
             <p>
                 <i class="fas fa-chart-line"></i>
@@ -297,18 +323,18 @@
             <i class="fas fa-headset"></i>
             <span>Service client</span>
         </a>
-        <a href="index.html" class="action-button">
+        <button onclick="handleLogout()" class="action-button">
             <i class="fas fa-sign-out-alt"></i>
             <span>Déconnexion</span>
-        </a>
+        </button>
         <a href="historique-recharge.html" class="action-button">
             <i class="fas fa-history"></i>
             <span>Historique Recharge</span>
         </a>
-        <a href="chat.html" class="action-button recover-button">
+        <button onclick="recoverEarnings()" class="action-button recover-button">
             <i class="fas fa-comments"></i>
-            <span>Chat</span>
-        </a>
+            <span>Récupérer les gains</span>
+        </button>
         <a href="equipe.html" class="action-button">
             <i class="fas fa-users"></i>
             <span>Mon équipe</span>
@@ -334,166 +360,205 @@
         </a>
     </div>
 
-    <script>
-        // Mettre en surbrillance le bouton actif dans le footer
-        document.querySelectorAll('.footer-button').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.footer-button').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-
-        // Initialiser le bouton actif en fonction de la page courante
-        window.addEventListener('load', function() {
-            const currentPage = window.location.pathname.split('/').pop().split('.')[0];
-            const activeButton = document.querySelector(`.footer-button[href*="${currentPage}"]`);
-            if (activeButton) {
-                activeButton.classList.add('active');
-            }
-        });
-    </script>
-    
     <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
-    authDomain: "ciaxe-727b1.firebaseapp.com",
-    databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
-    projectId: "ciaxe-727b1",
-    storageBucket: "ciaxe-727b1.appspot.com",
-    messagingSenderId: "52732576686",
-    appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
+            authDomain: "ciaxe-727b1.firebaseapp.com",
+            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
+            projectId: "ciaxe-727b1",
+            storageBucket: "ciaxe-727b1.appspot.com",
+            messagingSenderId: "52732576686",
+            appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+        };
 
-// Initialisation Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const database = getDatabase();
+        // Initialisation Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const database = getDatabase();
 
-// Navigation sécurisée
-window.navigate = function(page) {
-    window.location.href = `${page}.html`;
-};
+        // Fonctions utilitaires
+        function showLoading() {
+            document.querySelector('.loading-overlay').style.display = 'flex';
+        }
 
-// Calcul des gains en fonction du statut VIP
-function calculateTotalEarnings(vipStatus) {
-    const VIP_EARNINGS = {
-        '1': 300, '2': 500, '3': 1000, '4': 1500, '5': 2500,
-        '6': 3800, '7': 5000, '8': 6500, '9': 8800, '10': 9900,
-    };
-    return VIP_EARNINGS[vipStatus] || 0;
-}
+        function hideLoading() {
+            document.querySelector('.loading-overlay').style.display = 'none';
+        }
 
-// Vérifie si un jour s'est écoulé depuis la dernière récupération
-function hasDayPassed(lastUpdate) {
-    const now = new Date();
-    const lastUpdateDate = new Date(lastUpdate);
-    return now.getDate() !== lastUpdateDate.getDate();
-}
+        function formatNumber(number) {
+            return new Intl.NumberFormat('fr-FR').format(number);
+        }
 
-// Met à jour le solde et la date de la dernière récupération
-function updateBalance(userId, newBalance, currentDate) {
-    update(ref(database, `users/${userId}`), {
-        balance: newBalance,
-        lastRecovery: currentDate.toISOString()
-    });
-}
+        const VIP_EARNINGS = {
+            '1': 300,
+            '2': 500,
+            '3': 1000,
+            '4': 1500,
+            '5': 2500,
+            '6': 3800,
+            '7': 5000,
+            '8': 6500,
+            '9': 8800,
+            '10': 9900,
+        };
 
-// Fonction pour récupérer les gains
-window.recoverEarnings = function() {
-    const user = auth.currentUser;
-    if (user) {
-        const userRef = ref(database, `users/${user.uid}`);
-        get(userRef).then((snapshot) => {
-            const userData = snapshot.val();
-            if (userData) {
-                const currentDate = new Date();
-                const lastRecovery = new Date(userData.lastRecovery || 0);
-                
-                // Vérifier le niveau VIP
-                if (!userData.vipStatus || userData.vipStatus === '0') {
-                    alert("Vous n'avez pas encore investi. Veuillez investir avant de récupérer vos gains.");
+        function calculateTotalEarnings(vipStatus) {
+            return VIP_EARNINGS[vipStatus] || 0;
+        }
+
+        function hasDayPassed(lastUpdate) {
+            if (!lastUpdate) return true;
+            const now = new Date();
+            const lastUpdateDate = new Date(lastUpdate);
+            return now.getTime() - lastUpdateDate.getTime() >= 24 * 60 * 60 * 1000;
+        }
+
+        // Fonction de mise à jour des gains
+        async function updateUserEarnings(userId, newBalance, lastRecoveryDate) {
+            try {
+                await update(ref(database, `users/${userId}`), {
+                    balance: newBalance,
+                    lastRecovery: lastRecoveryDate
+                });
+                return true;
+            } catch (error) {
+                console.error("Erreur lors de la mise à jour des gains:", error);
+                return false;
+            }
+        }
+
+        // Fonction de récupération des gains
+        window.recoverEarnings = async function() {
+            showLoading();
+            const user = auth.currentUser;
+            
+            if (!user) {
+                hideLoading();
+                alert("Veuillez vous connecter pour récupérer vos gains.");
+                return;
+            }
+
+            try {
+                const userRef = ref(database, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val() || {};
+                const currentDate = new Date().toISOString();
+
+                if (!hasDayPassed(userData.lastRecovery)) {
+                    hideLoading();
+                    alert("Vous ne pouvez récupérer vos gains qu'une fois par jour. Veuillez réessayer demain.");
                     return;
                 }
 
-                if (hasDayPassed(lastRecovery)) {
-                    // Obtenir les gains quotidiens directement
-                    const dailyEarnings = userData.dailyEarnings || calculateTotalEarnings(userData.vipStatus);
-                    const newBalance = Number(userData.balance || 0) + dailyEarnings; // Convertir en nombre et additionner
-                    updateBalance(user.uid, newBalance, currentDate);
-                    alert(`Vous avez récupéré ${dailyEarnings} XOF. Votre nouveau solde est de ${newBalance} XOF.`);
-                    location.reload(); // Recharge la page pour mettre à jour l'affichage
-                } else {
-                    alert("Vous ne pouvez récupérer vos gains qu'une fois par jour. Veuillez réessayer demain.");
-                }
-            }
-        }).catch((error) => {
-            console.error("Erreur lors de la récupération des données utilisateur :", error);
-        });
-    } else {
-        alert("Vous devez être connecté pour récupérer vos gains.");
-    }
-};
-
-// Fonction pour mettre à jour les dailyEarnings dans Firebase
-window.updateDailyEarnings = function(newEarnings) {
-    const user = auth.currentUser;
-    if (user) {
-        const userRef = ref(database, `users/${user.uid}`);
-        update(userRef, {
-            dailyEarnings: newEarnings
-        }).then(() => {
-            // Met à jour l'affichage directement
-            document.getElementById("dailyEarnings").textContent = `${newEarnings} XOF`;
-            console.log("Les dailyEarnings ont été mis à jour avec succès:", newEarnings);
-            alert("Les dailyEarnings ont été mis à jour avec succès.");
-        }).catch((error) => {
-            console.error("Erreur lors de la mise à jour des dailyEarnings :", error);
-        });
-    } else {
-        alert("Vous devez être connecté pour modifier vos dailyEarnings.");
-    }
-};
-
-// Fonction pour additionner les gains
-function addEarnings(currentBalance, dailyEarnings, weeklyEarnings) {
-    return Number(currentBalance) + Number(dailyEarnings) + Number(weeklyEarnings);
-}
-
-// Fonction pour afficher les informations utilisateur
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        document.getElementById("userEmail").textContent = user.email;
-        const userRef = ref(database, `users/${user.uid}`);
-        onValue(userRef, (snapshot) => {
-            const userData = snapshot.val();
-            if (userData) {
                 const dailyEarnings = userData.dailyEarnings || calculateTotalEarnings(userData.vipStatus || '0');
-                const weeklyEarnings = dailyEarnings * 7;
+                const currentBalance = Number(userData.balance || 0);
+                const newBalance = currentBalance + dailyEarnings;
+
+                const success = await updateUserEarnings(user.uid, newBalance, currentDate);
+
+                if (success) {
+                    hideLoading();
+                    alert(`Félicitations ! Vous avez récupéré ${formatNumber(dailyEarnings)} XOF. Votre nouveau solde est de ${formatNumber(newBalance)} XOF.`);
+                    updateDisplayValues({
+                        balance: newBalance,
+                        dailyEarnings: dailyEarnings,
+                        weeklyEarnings: dailyEarnings * 7,
+                        vipStatus: userData.vipStatus || '0'
+                    });
+                } else {
+                    throw new Error("Échec de la mise à jour des gains");
+                }
+            } catch (error) {
+                console.error("Erreur lors de la récupération des gains:", error);
+                hideLoading();
+                alert("Une erreur est survenue lors de la récupération des gains. Veuillez réessayer plus tard.");
+            }
+        };
+
+        // Fonction de mise à jour des gains quotidiens
+        window.updateDailyEarnings = async function(newEarnings) {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Vous devez être connecté pour modifier vos gains quotidiens.");
+                return;
+            }
+
+            showLoading();
+            try {
+                const userRef = ref(database, `users/${user.uid}`);
+                await update(userRef, { dailyEarnings: newEarnings });
                 
-                // Récupérer et convertir le solde en nombre
-                const currentBalance = Number(userData.balance) || 0;
+                document.getElementById("dailyEarnings").textContent = `${formatNumber(newEarnings)} XOF`;
+                document.getElementById("weeklyEarnings").textContent = `${formatNumber(newEarnings * 7)} XOF`;
+                
+                hideLoading();
+                alert("Les gains quotidiens ont été mis à jour avec succès.");
+            } catch (error) {
+                console.error("Erreur lors de la mise à jour des gains quotidiens:", error);
+                hideLoading();
+                alert("Une erreur est survenue lors de la mise à jour des gains quotidiens.");
+            }
+        };
 
-                // Afficher les valeurs
-                document.getElementById("balance").textContent = `XOF ${currentBalance}`;
-                document.getElementById("dailyEarnings").textContent = `${dailyEarnings} XOF`;
-                document.getElementById("weeklyEarnings").textContent = `${weeklyEarnings} XOF`;
-                document.getElementById("vipStatus").textContent = `${userData.vipStatus || '0'}`;
+        // Fonction de déconnexion
+        window.handleLogout = async function() {
+            try {
+                await signOut(auth);
+                window.location.href = "login.html";
+            } catch (error) {
+                console.error("Erreur lors de la déconnexion:", error);
+                alert("Une erreur est survenue lors de la déconnexion.");
+            }
+        };
 
-                // Calculer et afficher le total des gains
-                const totalEarnings = addEarnings(currentBalance, dailyEarnings, weeklyEarnings);
-                document.getElementById("totalEarnings").textContent = `Total des gains: XOF ${totalEarnings}`;
+        // Fonction de mise à jour de l'affichage
+        function updateDisplayValues(data) {
+            document.getElementById("balance").textContent = `XOF ${formatNumber(data.balance)}`;
+            document.getElementById("dailyEarnings").textContent = `${formatNumber(data.dailyEarnings)} XOF`;
+            document.getElementById("weeklyEarnings").textContent = `${formatNumber(data.weeklyEarnings)} XOF`;
+            document.getElementById("vipStatus").textContent = data.vipStatus;
+        }
+
+        // Initialisation des écouteurs d'événements
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById("userEmail").textContent = user.email;
+                const userRef = ref(database, `users/${user.uid}`);
+                
+                onValue(userRef, (snapshot) => {
+                    const userData = snapshot.val() || {};
+                    const dailyEarnings = userData.dailyEarnings || calculateTotalEarnings(userData.vipStatus || '0');
+                    const weeklyEarnings = dailyEarnings * 7;
+                    const currentBalance = Number(userData.balance || 0);
+
+                    updateDisplayValues({
+                        balance: currentBalance,
+                        dailyEarnings: dailyEarnings,
+                        weeklyEarnings: weeklyEarnings,
+                        vipStatus: userData.vipStatus || '0'
+                    });
+                });
+            } else {
+                // Redirection vers la page de connexion si l'utilisateur n'est pas connecté
+                window.location.href = "login.html";
             }
         });
-    } else {
-        document.getElementById("userEmail").textContent = "non connecté";
-    }
-});
-</script>
+
+        // Gestionnaire d'erreurs global
+        window.addEventListener('error', function(event) {
+            console.error('Erreur globale:', event.error);
+            hideLoading();
+            alert("Une erreur inattendue s'est produite. Veuillez rafraîchir la page.");
+        });
+
+        // Initialisation de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            hideLoading();
+        });
+    </script>
 </body>
 </html>

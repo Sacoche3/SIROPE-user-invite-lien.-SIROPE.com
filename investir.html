@@ -4,329 +4,541 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Investissement</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Variables CSS pour une meilleure maintenance */
+        :root {
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+            --background-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --card-background: rgba(255, 255, 255, 0.95);
+            --text-primary: #1e3c72;
+            --text-secondary: #555;
+            --shadow-sm: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.2);
+            --border-radius: 20px;
+            --spacing-sm: 10px;
+            --spacing-md: 15px;
+            --spacing-lg: 25px;
+        }
+
+        /* Reset et styles de base */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom, #4CAF50, #ffffff);
+            background: var(--background-gradient);
+            min-height: 100vh;
         }
 
-        .balance-section {
-            margin: 100px auto;
-            font-size: 100px;
-            color: #fff;
-            background-color: #ff6f61;
-            padding: 15px;
-            text-align: center;
-            border-radius: 15px;
-            width: 800%;
-            max-width: 600px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
+        /* Conteneur principal des cartes VIP */
         .vip-selection {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-            padding-bottom: 80px;
+            gap: var(--spacing-lg);
+            margin: 20px;
+            padding: 20px 0 100px;
         }
 
+        /* Style des cartes VIP */
         .vip-level {
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 280px;
-            text-align: center;
-            transition: transform 0.3s ease, background-color 0.3s ease;
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            width: 300px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .vip-level:hover {
-            background-color: #f9f9f9;
-            transform: scale(1.05);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
 
+        /* En-tête de carte VIP */
         .vip-level strong {
             display: block;
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #4a4a4a;
+            font-size: 22px;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
         }
 
-        .vip-level .total-earnings {
+        /* Badge VIP */
+        .vip-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: white;
             font-weight: bold;
-            color: #ff6f61;
-            animation: colorChange 2s infinite;
+            font-size: 14px;
+            box-shadow: var(--shadow-sm);
         }
 
-        @keyframes colorChange {
-            0% { color: #ff6f61; }
-            25% { color: #4CAF50; }
-            50% { color: #ff9800; }
-            75% { color: #2196F3; }
-            100% { color: #ff6f61; }
+        /* Lignes d'information */
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            color: var(--text-secondary);
+            font-size: 16px;
         }
 
+        .info-row i {
+            width: 25px;
+            margin-right: 10px;
+            color: var(--text-primary);
+        }
+
+        /* Affichage des gains totaux */
+        .total-earnings {
+            display: block;
+            margin: 20px 0;
+            font-size: 18px;
+            color: var(--secondary-color);
+            font-weight: bold;
+            padding: var(--spacing-md);
+            background: #f0f4ff;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* Bouton d'investissement */
         .invest-button {
-            margin-top: 15px;
-            padding: 12px 25px;
-            background-color: #4CAF50;
+            width: 100%;
+            padding: var(--spacing-md);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: white;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 10px;
             font-size: 16px;
-            transition: background-color 0.3s ease;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .invest-button:hover {
-            background-color: #3b8d40;
+            transform: scale(1.02);
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+            box-shadow: var(--shadow-sm);
         }
 
+        /* Footer fixe */
         .fixed-footer {
             position: fixed;
             bottom: 0;
             left: 0;
-            width: 96%;
-            background-color: #ffffff;
+            width: 100%;
+            background: var(--card-background);
             display: flex;
             justify-content: space-around;
-            padding: 10px;
-            box-shadow: 0 -10px 10px rgba(0, 0, 0, 0.1);
+            padding: var(--spacing-md);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
         }
 
         .footer-button {
-            width: 77px;
-            height: 40px;
-            background-color: #000000;
-            color: white;
-            border: none;
-            border-radius: 100;
-            cursor: pointer;
-            transition: background-color 0.3s;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: 0.3s ease;
+            padding: 10px;
+            border-radius: 10px;
+            min-width: 70px;
         }
 
         .footer-button:hover {
-            background-color: #6a8dff;
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+
+        .footer-button i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .footer-button span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Media Queries pour la responsivité */
+        @media (max-width: 768px) {
+            .vip-level {
+                width: calc(100% - 40px);
+                margin: 10px;
+            }
+            
+            .info-row {
+                font-size: 14px;
+            }
+            
+            .total-earnings {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
-
     <div class="vip-selection">
-        
-        <!-- VIP 1 -->
-        <div class="vip-level" data-vip="1" data-amount="5000" data-daily-earnings="500" data-cycle="15">
-            <strong>VIP 1 - 5 000 XOF /10 USDT</strong><br>
-            Revenus: 500 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 7 500</span><br>
-            <button class="invest-button" data-vip="1">Investir</button>
-        </div>
-
-        <!-- Les autres niveaux VIP déjà présents -->
-
-        <div class="vip-level" data-vip="2" data-amount="10000" data-daily-earnings="1000" data-cycle="15">
-            <strong>VIP 2 - 10 000 XOF /20 USDT</strong><br>
-            Revenus: 1 000 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 15 000</span><br>
-            <button class="invest-button" data-vip="2">Investir</button>
-        </div>
-
-        <div class="vip-level" data-vip="3" data-amount="15000" data-daily-earnings="1500" data-cycle="15">
-            <strong>VIP 3 - 15 000 XOF /30 USDT</strong><br>
-            Revenus: 1 500 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 22 500</span><br>
-            <button class="invest-button" data-vip="3">Investir</button>
-        </div>
-
-        <!-- Ajoutez les autres niveaux VIP si nécessaire -->
-
-        <div class="vip-level" data-vip="4" data-amount="20000" data-daily-earnings="2000" data-cycle="15">
-            <strong>VIP 4 - 20 000 XOF /40 USDT</strong><br>
-            Revenus: 2 000 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 30 000 </span><br>
-            <button class="invest-button" data-vip="4">Investir</button>
-        </div>
-
-        <div class="vip-level" data-vip="5" data-amount="30000" data-daily-earnings="3000" data-cycle="15">
-            <strong>VIP 5 - 30 000 XOF /60 USDT</strong><br>
-            Revenus: 3 000 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 45 000</span><br>
-            <button class="invest-button" data-vip="5">Investir</button>
-        </div>
-
-        <div class="vip-level" data-vip="6" data-amount="50000" data-daily-earnings="5000" data-cycle="30">
-            <strong>VIP 6 - 50 000 XOF /100 USDT</strong><br>
-            Revenus: 5 000 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 75 000</span><br>
-            <button class="invest-button" data-vip="6">Investir</button>
-        </div>
-
-        <div class="vip-level" data-vip="7" data-amount="75000" data-daily-earnings="7000" data-cycle="15">
-            <strong>VIP 7 - 75 000 XOF /150 USDT</strong><br>
-            Revenus: 7 000 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 105 000</span><br>
-            <button class="invest-button" data-vip="7">Investir</button>
-        </div>
-
-        <div class="vip-level" data-vip="8" data-amount="100000" data-daily-earnings="10000" data-cycle="15">
-            <strong>VIP 8 - 100 000 XOF /200 USDT</strong><br>
-            Revenus: 10 000 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 150 000</span><br>
-            <button class="invest-button" data-vip="8">Investir</button>
-        </div>
-
-        <div class="vip-level" data-vip="9" data-amount="150000" data-daily-earnings="15000" data-cycle="15">
-            <strong>VIP 9 - 150 000 XOF /300 USDT</strong><br>
-            Revenus: 15 000 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 225 000</span><br>
-            <button class="invest-button" data-vip="9">Investir</button>
-        </div>
-
-        <div class="vip-level" data-vip="10" data-amount="200000" data-daily-earnings="20000" data-cycle="15">
-            <strong>VIP 10 - 200 000 XOF /400 USDT</strong><br>
-            Revenus: 20 000 XOF/jour<br>
-            Cycle: 15 jours<br>
-            <span class="total-earnings">Revenus Totaux: XOF 300 000</span><br>
-            <button class="invest-button" data-vip="10">Investir</button>
-        </div>
-
+        <!-- Cartes VIP générées dynamiquement via JavaScript -->
     </div>
 
     <div class="fixed-footer">
-        <button class="footer-button" onclick="navigate('accueil')">accueil</button>
-        <button class="footer-button" onclick="navigate('historique_retrait')">Historique</button>
-        <button class="footer-button" onclick="navigate('investir')">investir</button>
-        <button class="footer-button" onclick="navigate('balance')">compte</button>
+        <button class="footer-button" onclick="navigate('accueil')">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </button>
+        <button class="footer-button" onclick="navigate('historique_retrait')">
+            <i class="fas fa-history"></i>
+            <span>Historique</span>
+        </button>
+        <button class="footer-button" onclick="navigate('investir')">
+            <i class="fas fa-donate"></i>
+            <span>Investir</span>
+        </button>
+        <button class="footer-button" onclick="navigate('balance')">
+            <i class="fas fa-wallet"></i>
+            <span>Compte</span>
+        </button>
     </div>
 
     <script>
-        // Fonction pour changer rapidement les couleurs de la section des revenus
-        const earningsSections = document.querySelectorAll('.total-earnings');
-        const colors = ['#ff6f61', '#4CAF50', '#ff9800', '#2196F3', '#9c27b0'];
+        // Données des packs VIP
+        const vipPacks = [
+            {
+                level: 1,
+                name: "Pack Débutant",
+                price: 6500,
+                dailyRevenue: 1000,
+                cycle: 25,
+                totalRevenue: 25000
+            },
+            {
+                level: 2,
+                name: "Pack Bronze",
+                price: 15000,
+                dailyRevenue: 2050,
+                cycle: 30,
+                totalRevenue: 61500
+            },
+            {
+                level: 3,
+                name: "Pack Argent",
+                price: 25000,
+                dailyRevenue: 3100,
+                cycle: 30,
+                totalRevenue: 93000
+            },
+            {
+                level: 4,
+                name: "Pack Or",
+                price: 45000,
+                dailyRevenue: 4700,
+                cycle: 31,
+                totalRevenue: 139500
+            },
+            {
+                level: 5,
+                name: "Pack Platine",
+                price: 60000,
+                dailyRevenue: 7500,
+                cycle: 30,
+                totalRevenue: 225000
+            },
+            {
+                level: 6,
+                name: "Pack Diamant",
+                price: 90000,
+                dailyRevenue: 9000,
+                cycle: 30,
+                totalRevenue: 270000
+            },
+            {
+                level: 7,
+                name: "Pack Émeraude",
+                price: 125000,
+                dailyRevenue: 12500,
+                cycle: 30,
+                totalRevenue: 375000
+            },
+            {
+                level: 8,
+                name: "Pack Rubis",
+                price: 160000,
+                dailyRevenue: 15000,
+                cycle: 30,
+                totalRevenue: 450000
+            },
+            {
+                level: 9,
+                name: "Pack Saphir",
+                price: 200000,
+                dailyRevenue: 20000,
+                cycle: 30,
+                totalRevenue: 600000
+            },
+            {
+                level: 10,
+                name: "Pack Premium",
+                price: 250000,
+                dailyRevenue: 30000,
+                cycle: 30,
+                totalRevenue: 900000
+            }
+        ];
 
-        setInterval(() => {
-            earningsSections.forEach(section => {
-                const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                section.style.color = randomColor;
+        // Fonction pour générer les cartes VIP
+        function generateVIPCards() {
+            const container = document.querySelector('.vip-selection');
+            vipPacks.forEach(pack => {
+                const card = document.createElement('div');
+                card.className = 'vip-level';
+                card.setAttribute('data-vip', pack.level);
+                card.setAttribute('data-amount', pack.price);
+                card.setAttribute('data-daily-earnings', pack.dailyRevenue);
+                card.setAttribute('data-cycle', pack.cycle);
+
+                card.innerHTML = `
+                    <div class="vip-badge">VIP ${pack.level}</div>
+                    <strong><i class="fas fa-crown"></i> ${pack.name}</strong>
+                    <div class="info-row">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Prix: ${pack.price.toLocaleString()} XOF</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-coins"></i>
+                        <span>Revenus: ${pack.dailyRevenue.toLocaleString()} XOF/jour</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-clock"></i>
+                        <span>Cycle: ${pack.cycle} jours</span>
+                    </div>
+                    <div class="total-earnings">
+                        <i class="fas fa-chart-line"></i>
+                        Revenus Totaux: ${pack.totalRevenue.toLocaleString()} XOF
+                    </div>
+                    <button class="invest-button" data-vip="${pack.level}">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        Investir
+                    </button>
+                `;
+
+                container.appendChild(card);
             });
-        }, 500); // Changer de couleur toutes les 500 ms
+        }
 
+        // Initialisation de l'application
+        document.addEventListener('DOMContentLoaded', function() {
+            generateVIPCards();
+            
+            // Animation des cartes
+            const cards = document.querySelectorAll('.vip-level');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Animation des boutons d'investissement
+            const investButtons = document.querySelectorAll('.invest-button');
+            investButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 100);
+                });
+            });
+        });
+
+        // Fonction de navigation
         function navigate(page) {
-            // Remplacez ce code par la logique de navigation réelle
-            console.log(`Navigation vers ${page}`);
+            window.location.href = `${page}.html`;
         }
     </script>
+
+    <!-- Firebase Configuration -->
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
-        authDomain: "ciaxe-727b1.firebaseapp.com",
-        databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
-        projectId: "ciaxe-727b1",
-        storageBucket: "ciaxe-727b1.appspot.com",
-        messagingSenderId: "52732576686",
-        appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
+            authDomain: "ciaxe-727b1.firebaseapp.com",
+            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
+            projectId: "ciaxe-727b1",
+            storageBucket: "ciaxe-727b1.appspot.com",
+            messagingSenderId: "52732576686",
+            appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const database = getDatabase();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const database = getDatabase();
 
-    let userBalance = 0;
+        let userBalance = 0;
 
-    function getUserBalance() {
-        const user = auth.currentUser;
-        if (user) {
-            const userRef = ref(database, 'users/' + user.uid);
-            onValue(userRef, (snapshot) => {
-                const data = snapshot.val();
-                userBalance = data ? Number(data.balance) || 0 : 0;
-                document.getElementById('currentBalance').innerText = `XOF ${userBalance}`;
+        function getUserBalance() {
+            const user = auth.currentUser;
+            if (user) {
+                const userRef = ref(database, 'users/' + user.uid);
+                onValue(userRef, (snapshot) => {
+                    const data = snapshot.val();
+                    userBalance = data ? Number(data.balance) || 0 : 0;
+                });
+            }
+        }
+
+       function invest(vipData) {
+            const user = auth.currentUser;
+            if (user) {
+                if (userBalance >= vipData.amount) {
+                    const newBalance = userBalance - vipData.amount;
+                    const updates = {
+                        [`/users/${user.uid}/balance`]: newBalance,
+                        [`/users/${user.uid}/vipStatus`]: vipData.level,
+                        [`/users/${user.uid}/dailyEarnings`]: vipData.dailyEarnings,
+                        [`/users/${user.uid}/cycle`]: vipData.cycle,
+                        [`/users/${user.uid}/totalEarnings`]: vipData.dailyEarnings * vipData.cycle,
+                        [`/users/${user.uid}/investmentDate`]: new Date().toISOString(),
+                        [`/users/${user.uid}/lastPaymentDate`]: new Date().toISOString()
+                    };
+
+                    update(ref(database), updates).then(() => {
+                        alert(`Félicitations ! Votre investissement dans le pack VIP ${vipData.level} a été effectué avec succès.`);
+                        getUserBalance();
+                    }).catch((error) => {
+                        console.error('Erreur lors de la mise à jour :', error);
+                        alert("Une erreur est survenue lors de l'investissement. Veuillez réessayer.");
+                    });
+                } else {
+                    alert("Solde insuffisant pour cet investissement. Veuillez recharger votre compte.");
+                }
+            } else {
+                alert("Veuillez vous connecter pour effectuer un investissement.");
+                window.location.href = "login.html";
+            }
+        }
+
+        // Gestionnaire d'événements pour les boutons d'investissement
+        function setupInvestmentButtons() {
+            document.querySelectorAll('.invest-button').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const vipLevel = button.getAttribute('data-vip');
+                    const vipElement = document.querySelector(`.vip-level[data-vip="${vipLevel}"]`);
+                    
+                    if (!vipElement) {
+                        console.error('Élément VIP non trouvé');
+                        return;
+                    }
+
+                    const vipAmount = parseInt(vipElement.getAttribute('data-amount'));
+                    const dailyEarnings = parseInt(vipElement.getAttribute('data-daily-earnings'));
+                    const cycle = parseInt(vipElement.getAttribute('data-cycle'));
+
+                    const selectedVip = {
+                        level: vipLevel,
+                        amount: vipAmount,
+                        dailyEarnings: dailyEarnings,
+                        cycle: cycle
+                    };
+
+                    // Confirmation avant investissement
+                    if (confirm(`Êtes-vous sûr de vouloir investir ${vipAmount.toLocaleString()} XOF dans le pack VIP ${vipLevel} ?`)) {
+                        invest(selectedVip);
+                    }
+                });
             });
         }
-    }
 
-    function invest(vipData) {
-        const user = auth.currentUser;
-        if (user) {
-            const vipAmount = vipData.amount;
-
-            if (userBalance >= vipAmount) {
-                const newBalance = userBalance - vipAmount;
-
-                const updates = {
-                    [`/users/${user.uid}/balance`]: newBalance,
-                    [`/users/${user.uid}/vipStatus`]: vipData.level,
-                    [`/users/${user.uid}/dailyEarnings`]: vipData.dailyEarnings,
-                    [`/users/${user.uid}/cycle`]: vipData.cycle,
-                    [`/users/${user.uid}/totalEarnings`]: vipData.dailyEarnings * vipData.cycle
-                };
-
-                update(ref(database), updates).then(() => {
-                    alert(`Investissement réussi dans le niveau VIP ${vipData.level}`);
-                    getUserBalance();
-                }).catch((error) => {
-                    console.error('Erreur lors de la mise à jour :', error);
-                    alert("Une erreur est survenue lors de l'investissement. Veuillez réessayer.");
-                });
+        // Vérification de l'état de l'authentification
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                getUserBalance();
+                setupInvestmentButtons();
             } else {
-                alert("Solde insuffisant pour cet investissement.");
+                console.log("Utilisateur non connecté");
+                const shouldRedirect = confirm("Vous devez être connecté pour accéder à cette page. Voulez-vous vous connecter ?");
+                if (shouldRedirect) {
+                    window.location.href = "login.html";
+                }
             }
-        } else {
-            alert("Veuillez vous connecter pour investir.");
-        }
-    }
-
-    document.querySelectorAll('.invest-button').forEach((button) => {
-        button.addEventListener('click', () => {
-            const vipLevel = button.getAttribute('data-vip');
-            const vipElement = document.querySelector(`.vip-level[data-vip="${vipLevel}"]`);
-            const vipAmount = parseInt(vipElement.getAttribute('data-amount'));
-            const dailyEarnings = parseInt(vipElement.getAttribute('data-daily-earnings'));
-            const cycle = parseInt(vipElement.getAttribute('data-cycle'));
-
-            const selectedVip = {
-                level: vipLevel,
-                amount: vipAmount,
-                dailyEarnings: dailyEarnings,
-                cycle: cycle
-            };
-
-            invest(selectedVip);
         });
-    });
 
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            getUserBalance();
-        } else {
-            alert("Vous devez être connecté pour investir.");
-            window.location.href = "index.html";
+        // Système de récompenses quotidiennes
+        function processUserRewards() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const userRef = ref(database, 'users/' + user.uid);
+            onValue(userRef, (snapshot) => {
+                const userData = snapshot.val();
+                if (!userData) return;
+
+                const lastPayment = new Date(userData.lastPaymentDate);
+                const now = new Date();
+                const diffDays = Math.floor((now - lastPayment) / (1000 * 60 * 60 * 24));
+
+                if (diffDays >= 1 && userData.vipStatus) {
+                    const reward = userData.dailyEarnings;
+                    const newBalance = (userData.balance || 0) + reward;
+                    
+                    update(ref(database, 'users/' + user.uid), {
+                        balance: newBalance,
+                        lastPaymentDate: now.toISOString()
+                    }).then(() => {
+                        alert(`Félicitations ! Vous avez reçu ${reward.toLocaleString()} XOF de revenus quotidiens.`);
+                    }).catch((error) => {
+                        console.error('Erreur lors du paiement des récompenses :', error);
+                    });
+                }
+            });
         }
-    });
 
-    window.navigate = function(page) {
-        window.location.href = `${page}.html`;
-    };
-</script>
-</body>
-</html>
+        // Vérification des récompenses au chargement et toutes les heures
+        if (auth.currentUser) {
+            processUserRewards();
+            setInterval(processUserRewards, 3600000); // Vérifie toutes les heures
+        }
+
+        // Fonction de navigation exposée globalement
+        window.navigate = function(page) {
+            window.location.href = `${page}.html`;
+        };
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            if (auth.currentUser) {
+                getUserBalance();
+                setupInvestmentButtons();
+                processUserRewards();
+            }
+        });
+    </script> 
+    </body>
+</HTML>

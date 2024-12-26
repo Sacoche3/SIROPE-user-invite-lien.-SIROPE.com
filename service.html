@@ -2,98 +2,132 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
-    <title>Service Client - Ciaxe</title>
+    <title>Service Client Despée - Groupe VIP</title>
     <style>
-         body {
-        font-family: 'Roboto', sans-serif;
-        margin: 0;
-        padding: 20px;
-        background: linear-gradient(to bottom, #4CAF50, #FFFFFF); /* Dégradé vert en haut vers blanc en bas */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
         }
-        .background {
-            background-color: ; /* Couleur d'arrière-plan */
-            height: 100%; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column; /* Aligne les éléments verticalement */
-        }
+        
         .container {
-            background: rgba(255, 255, 255, 0.9); /* Blanc avec transparence */
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
         }
-        h1 {
-            font-size: 1.8rem;
-            color: #5558ff;
-            margin-bottom: 10px; /* Espacement sous le titre */
-        }
-        p {
-            font-size: 1rem;
-            color: #555;
-            margin: 10px 0; /* Espacement des paragraphes */
-        }
-        .telegram-logo {
-            margin-top: 20px; /* Ajusté pour le centrage */
+        
+        .logo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            display: block;
+            background: #2d3436;
+            border-radius: 50%;
             display: flex;
+            align-items: center;
             justify-content: center;
-        }
-        .telegram-logo img {
-            width: 50px; /* Taille réduite de l'icône Telegram */
-            height: auto;
-        }
-        .contact-button {
-            background-color: #28a745; /* Couleur verte */
             color: white;
-            padding: 10px 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+        
+        .alert-box {
+            background: #ff7675;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .requirements {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .requirements h2 {
+            color: #2d3436;
+            margin-top: 0;
+        }
+        
+        .requirements ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .requirements li {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .requirements li:before {
+            content: "✓";
+            color: #00b894;
+            position: absolute;
+            left: 0;
+        }
+        
+        .telegram-button {
+            background: #0088cc;
+            color: white;
+            padding: 1rem 2rem;
             border: none;
-            border-radius: 5px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
             cursor: pointer;
-            margin: 10px 0; /* Espacement vertical entre les boutons */
-            text-decoration: none; /* Supprime le soulignement pour un lien */
-            transition: background-color 0.3s;
-        }
-        .contact-button:hover {
-            background-color: #218838; /* Couleur au survol */
-        }
-        .button-section {
             display: flex;
-            flex-direction: column; /* Colonne pour séparer les boutons */
-            align-items: center; /* Centre les boutons */
-            margin-top: 20px;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            text-decoration: none;
+            transition: transform 0.2s;
         }
-        .phone-link {
-            color: #5558ff; /* Couleur du numéro de téléphone */
-            text-decoration: none; /* Supprime le soulignement pour le numéro */
+        
+        .telegram-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .telegram-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            fill: white;
         }
     </style>
 </head>
 <body>
-    <div class="background">
-        <div class="container">
-            <h1>Avez-vous besoin d'aide ?</h1>
-            <p>Le service client est disponible de 8H00 à 22H00.</p>
-            
-            <div class="button-section">
-                <p>Rejoignez-nous sur WhatsApp :</p>
-                <a href="https://chat.whatsapp.com/KWvK5MsIPJbCNF3YhKtQMD" class="contact-button" target="_blank">WhatsApp</a>
-            </div>
-            
-            <div class="button-section">
-                <p>Ou sur Telegram :</p>
-                <a href="https://t.me/+eYMGTZ7DpsM0YTI0" class="contact-button" target="_blank">Telegram</a>
-            </div>
+    <div class="container">
+        <div class="logo">
+            D
         </div>
+        
+        <div class="alert-box">
+            <strong>⚠️ Message Important</strong>
+            <p>Pour rejoindre le groupe Despée, vous devez obligatoirement avoir atteint le niveau VIP 1.</p>
+        </div>
+        
+        <div class="requirements">
+            <h2>Preuves requises pour adhérer au groupe :</h2>
+            <ul>
+                <li>Capture d'écran de votre niveau VIP 1</li>
+                <li>Preuve de paiement</li>
+                <li>Email du compte validé</li>
+            </ul>
+        </div>
+        
+        <a href="https://t.me/despeuy" class="telegram-button">
+            <svg class="telegram-icon" viewBox="0 0 24 24">
+                <path fill="white" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.2-.04-.28-.02-.12.02-1.98 1.26-5.61 3.71-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.89.03-.25.39-.51 1.08-.77 4.24-1.84 7.07-3.06 8.48-3.66 4.04-1.71 4.88-2.01 5.42-2.02.12 0 .39.03.56.18.13.12.17.28.19.45-.02.06-.02.11-.02.17z"/>
+            </svg>
+            Rejoindre le groupe Despée
+        </a>
     </div>
 </body>
 </html>

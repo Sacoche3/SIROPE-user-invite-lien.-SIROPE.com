@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historique des Retraits</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Même style CSS que précédemment -->
     <style>
+        /* Votre CSS existant reste identique */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
         * {
@@ -171,34 +173,60 @@
         const auth = getAuth();
         const database = getDatabase();
 
-        function parseDate(dateStr) {
-            if (!dateStr) return null;
-            
-            // Si c'est déjà un timestamp
-            if (typeof dateStr === 'number') {
-                return new Date(dateStr);
-            }
-            
-            // Si c'est un objet Firebase Timestamp
-            if (dateStr && typeof dateStr === 'object' && dateStr.seconds) {
-                return new Date(dateStr.seconds * 1000);
-            }
-
+        function formatDate(dateValue) {
             try {
-                const date = new Date(dateStr);
-                if (!isNaN(date.getTime())) {
-                    return date;
+                let timestamp;
+                
+                // Gestion des différents formats de date
+                if (!dateValue) {
+                    // Si pas de date, utiliser maintenant
+                    timestamp = Date.now();
+                } else if (typeof dateValue === 'object') {
+                    if (dateValue.seconds) {
+                        // Timestamp Firebase
+                        timestamp = dateValue.seconds * 1000;
+                    } else if (dateValue instanceof Date) {
+                        // Objet Date
+                        timestamp = dateValue.getTime();
+                    } else if (dateValue.toDate) {
+                        // Timestamp Firestore
+                        timestamp = dateValue.toDate().getTime();
+                    } else {
+                        timestamp = Date.now();
+                    }
+                } else if (typeof dateValue === 'string') {
+                    // Essayer de parser la chaîne de date
+                    const parsedDate = new Date(dateValue);
+                    timestamp = parsedDate.getTime();
+                } else if (typeof dateValue === 'number') {
+                    // Timestamp numérique
+                    timestamp = dateValue;
                 }
-            } catch (e) {
-                console.error("Erreur parsing date:", e);
-            }
-            return null;
-        }
 
-        function formatDate(date) {
-            if (!date || !(date instanceof Date)) return '';
-            
-            try {
+                // Vérifier si le timestamp est valide
+                if (isNaN(timestamp)) {
+                    console.error("Date invalide:", dateValue);
+                    timestamp = Date.now();
+                }
+
+                // Créer l'objet date à partir du timestamp
+                const date = new Date(timestamp);
+
+                // Formater la date selon la locale française
+                const formatter = new Intl.DateTimeFormat('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Africa/Dakar' // Définir le fuseau horaire pour l'Afrique de l'Ouest
+                });
+
+                return formatter.format(date);
+            } catch (error) {
+                console.error("Erreur lors du formatage de la date:", error);
                 return new Intl.DateTimeFormat('fr-FR', {
                     year: 'numeric',
                     month: 'long',
@@ -206,11 +234,9 @@
                     hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit',
-                    hour12: false
-                }).format(date);
-            } catch (e) {
-                console.error("Erreur formatage date:", e);
-                return '';
+                    hour12: false,
+                    timeZone: 'Africa/Dakar'
+                }).format(new Date());
             }
         }
 
@@ -224,34 +250,25 @@
 
                     const data = snapshot.val();
                     if (data) {
-                        console.log("Données brutes:", data);  // Pour le débogage
-
                         const sortedHistory = Object.entries(data)
-                            .map(([key, value]) => {
-                                const parsedDate = parseDate(value.date);
-                                console.log("Date parsée pour", key, ":", parsedDate); // Pour le débogage
-                                return {
-                                    key,
-                                    ...value,
-                                    parsedDate: parsedDate
-                                };
-                            })
-                            .filter(item => item.parsedDate) // Filtrer les dates invalides
-                            .sort((a, b) => b.parsedDate - a.parsedDate);
+                            .map(([key, value]) => ({
+                                key,
+                                ...value,
+                                // Stocker la date comme timestamp pour un tri précis
+                                timestamp: value.date ? new Date(value.date).getTime() : Date.now()
+                            }))
+                            .sort((a, b) => b.timestamp - a.timestamp); // Tri par timestamp décroissant
 
                         sortedHistory.forEach((historyItem) => {
                             const div = document.createElement('div');
                             div.classList.add('history-item');
-                            const formattedDate = formatDate(historyItem.parsedDate);
-                            console.log("Date formatée:", formattedDate); // Pour le débogage
-
                             div.innerHTML = `
                                 <div class="history-info">
                                     <div class="amount">XOF ${Number(historyItem.amount).toLocaleString()}</div>
                                     <div class="fee">Frais: XOF ${Number(historyItem.fee).toLocaleString()}</div>
                                     <div class="date">
                                         <i class="far fa-calendar-alt"></i>
-                                        ${formattedDate}
+                                        ${formatDate(historyItem.date)}
                                     </div>
                                     <div class="status">${historyItem.status}</div>
                                 </div>

@@ -4,174 +4,358 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Votre Solde</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-    --primary-color: #4CAF50;
-    --secondary-color: #2196F3;
-    --text-color: #333;
-    --vip-color: #FFC107;
-}
+            --primary-color: #00a854;
+            --secondary-color: #1890ff;
+            --vip-color: #ffd700;
+            --text-color: #333;
+            --gradient-start: #f0f2f5;
+            --gradient-end: #ffffff;
+        }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to top, white 50%, #00ff00 50%);
-    min-height: 100vh;
-    padding: 20px;
-    padding-bottom: 89px;
-}
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 89px;
+        }
 
-.vip-container {
-    background-color: var(--vip-color);
-    color: var(--text-color);
-    padding: 15px;
-    text-align: center;
-    border-radius: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
+        /* Style amélioré pour la section VIP */
+        .vip-container {
+            background: linear-gradient(45deg, #ffd700, #ffa500);
+            color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
 
-.email-section {
-    background-color: var(--secondary-color);
-    color: white;
-    padding: 15px;
-    border-radius: 15px;
-    text-align: center;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
+        .vip-container i {
+            font-size: 2.5em;
+            color: #fff;
+        }
 
-.balance-container {
-    background-color: white;
-    color: var(--text-color);
-    padding: 05px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    margin-bottom: 30px;
-}
+        .vip-content {
+            text-align: center;
+        }
 
-.balance {
-    font-size: 2em;
-    font-weight: bold;
-    margin: 15px 0;
-    color: var(--primary-color);
-}
+        .vip-container h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
 
-.earnings-info {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 05px;
-}
+        /* Style amélioré pour la section email */
+        .email-section {
+            background: linear-gradient(45deg, #1890ff, #36cfc9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-.earnings-info p {
-    background-color: var(--secondary-color);
-    color: white;
-    padding: 05px;
-    border-radius: 05px;
-}
+        .email-section i {
+            font-size: 1.8em;
+        }
 
-.action-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(99px, 1fr));
-    gap: 10px;
-}
+        /* Style amélioré pour la section solde */
+        .balance-container {
+            background: white;
+            color: var(--text-color);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
 
-.action-button {
-    background-color: var(--primary-color);
-    color: white; /* Correction ici : "blanc" doit être "white" */
-    border: none;
-    padding: 10px;
-    border-radius: 05px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
+        .balance-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
 
-.action-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
-}
+        .balance-icon {
+            font-size: 2.5em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
 
-.recover-button {
-    background-color: var(--vip-color);
-    color: var(--text-color);
-}
+        .balance {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 15px 0;
+            color: var(--primary-color);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
 
-.fixed-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%; /* Changé à 96% pour mieux s'adapter */
-    background-color: #ffffff;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-    box-shadow: 0 -10px 10px rgba(0, 0, 0, 0.1);
-}
+        .earnings-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
 
-.footer-button {
-    width: 77px; /* Ajustez la largeur pour un carré */
-    height: 40px;
-    background-color: #000000;
-    color: white;
-    border: none;
-    border-radius: 100;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: flex; /* Permet d'aligner le texte au centre */
-    align-items: center; /* Centrer verticalement */
-    justify-content: center; /* Centrer horizontalement */
-}
+        .earnings-info p {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-.footer-button:hover {
-    background-color: #6a8dff;
-}
+        .earnings-info p i {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        /* Style des boutons d'action (inchangé) */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 80px;
+        }
+
+        .action-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-decoration: none;
+            gap: 8px;
+        }
+
+        .action-button i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .recover-button {
+            background: var(--vip-color);
+            color: var(--text-color);
+        }
+
+        .recover-button:hover {
+            background: #e6ac00;
+            color: white;
+        }
+
+        /* Footer (inchangé) */
+        .fixed-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .footer-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 25%;
+            padding: 8px 0;
+            background: none;
+            border: none;
+            color: #666;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .footer-button i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .footer-button span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .footer-button:hover,
+        .footer-button.active {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 320px) {
+            .action-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+            
+            .action-button {
+                padding: 10px;
+                font-size: 0.8em;
+            }
+
+            .earnings-info {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="vip-container">
-        <h2>VIP <span id="vipStatus">0</span></h2>
+        <i class="fas fa-crown"></i>
+        <div class="vip-content">
+            <h2>VIP <span id="vipStatus">0</span></h2>
+            <span>Status Premium</span>
+        </div>
     </div>
 
     <div class="email-section">
-        Adresse e-mail : <span id="userEmail">non connecté</span>
+        <i class="fas fa-envelope"></i>
+        <div>
+            <strong>Adresse e-mail :</strong><br>
+            <span id="userEmail">non connecté</span>
+        </div>
     </div>
 
     <div class="balance-container">
+        <i class="fas fa-wallet balance-icon"></i>
         <h2>Votre Solde</h2>
         <div id="balance" class="balance">XOF </div>
         <div class="earnings-info">
-            <p>Gain journalier : <span id="dailyEarnings">00 XOF</span></p>
-            <p>Gain hebdomadaire : <span id="weeklyEarnings">00 XOF </span></p>
+            <p>
+                <i class="fas fa-chart-line"></i>
+                <span>Gain journalier</span>
+                <strong id="dailyEarnings">00 XOF</strong>
+            </p>
+            <p>
+                <i class="fas fa-calendar-week"></i>
+                <span>Gain hebdomadaire</span>
+                <strong id="weeklyEarnings">00 XOF</strong>
+            </p>
         </div>
     </div>
 
     <div class="action-buttons">
-        <button class="action-button" onclick="navigate('depot')">Dépôt </button>
-        <button class="action-button" onclick="navigate('retrait')">Retrait </button>
-        <button class="action-button" onclick="navigate('pt')">Compte retrait </button>
-        <button class="action-button" onclick="navigate('service')">Service client </button>
-        <button class="action-button" onclick="navigate('index')">Déconnecte</button>
-        <button class="action-button" onclick="navigate('historique-recharge')">Historique Recharge </button>
-        <button class="action-button recover-button" onclick="recoverEarnings()">Chate </button>
-        
-        <button class="action-button" onclick="navigate('equipe')">mon équipe</button>
+        <a href="depot.html" class="action-button">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Dépôt</span>
+        </a>
+        <a href="retrait.html" class="action-button">
+            <i class="fas fa-hand-holding-usd"></i>
+            <span>Retrait</span>
+        </a>
+        <a href="pt.html" class="action-button">
+            <i class="fas fa-wallet"></i>
+            <span>Compte retrait</span>
+        </a>
+        <a href="service.html" class="action-button">
+            <i class="fas fa-headset"></i>
+            <span>Service client</span>
+        </a>
+        <a href="index.html" class="action-button">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Déconnexion</span>
+        </a>
+        <a href="historique-recharge.html" class="action-button">
+            <i class="fas fa-history"></i>
+            <span>Historique Recharge</span>
+        </a>
+        <a href="chat.html" class="action-button recover-button">
+            <i class="fas fa-comments"></i>
+            <span>Chat</span>
+        </a>
+        <a href="equipe.html" class="action-button">
+            <i class="fas fa-users"></i>
+            <span>Mon équipe</span>
+        </a>
+    </div>
+    
+    <div class="fixed-footer">
+        <a href="accueil.html" class="footer-button">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="historique_retrait.html" class="footer-button">
+            <i class="fas fa-history"></i>
+            <span>Historique</span>
+        </a>
+        <a href="investir.html" class="footer-button">
+            <i class="fas fa-donate"></i>
+            <span>Investir</span>
+        </a>
+        <a href="balance.html" class="footer-button">
+            <i class="fas fa-wallet"></i>
+            <span>Compte</span>
+        </a>
     </div>
 
-    <div class="fixed-footer">
-        <button class="footer-button" onclick="navigate('accueil')">accueil</button>
-        <button class="footer-button" onclick="navigate('historique_retrait')">Historique</button>
-        <button class="footer-button" onclick="navigate('investir')">investir</button>
-        <button class="footer-button" onclick="navigate('balance')">compte</button>
-    </div>
-   <script type="module">
+    <script>
+        // Mettre en surbrillance le bouton actif dans le footer
+        document.querySelectorAll('.footer-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.footer-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Initialiser le bouton actif en fonction de la page courante
+        window.addEventListener('load', function() {
+            const currentPage = window.location.pathname.split('/').pop().split('.')[0];
+            const activeButton = document.querySelector(`.footer-button[href*="${currentPage}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        });
+    </script>
+    
+    <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";

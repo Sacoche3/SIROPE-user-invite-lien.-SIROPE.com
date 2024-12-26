@@ -4,6 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page d'équipe</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(to bottom, #4CAF50 50%, #f7f9fc 50%);
+            height: 100vh;
+        }
+
+        .gmail-section {
+            background-color: #000000;
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            margin: 10px;
+        }
+
+        .section {
+            flex: 1;
+            padding: 20px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            text-align: center;
+        }
+
+        .code-section, .link-section {
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        .copy-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+
+        h1 { margin: 0; }
+        
+        .label { 
+            font-weight: bold; 
+            color: #007bff; 
+        }
+    </style>
+</head>
+<body>
+    <div class="gmail-section">
+        <p><span class="label">Email :</span> <span id="userEmail">Chargement...</span></p>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <p><span class="label">Total de l'équipe :</span> <span id="totalTeam">0 XOF</span></p>
+        </div>
+        <div class="section">
+            <p><span class="label">Recharge total d'équipe :</span> <span id="totalRecharge">0 XOF</span></p>
+        </div>
+    </div>
+
+    <div class="code-section">
+        <h2>Code généré :</h2>
+        <p id="generatedCode">XXXXX</p>
+        <button class="copy-button" onclick="copyCode()">Copier le code</button>
+    </div>
+
+    <div class="link-section">
+        <h2>Bonus de parrainage illimité :</h2>
+        <p id="bonusLink">https://despee-user-invite-lien-despee-com-726w.vercel.app</p>
+        <button class="copy-button" onclick="copyLink()">Copier le lien</button>
+    </div>
+
     <script type="module">
         // Configuration Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.0/firebase-app.js";
@@ -20,21 +112,21 @@
             appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
         };
 
-        // Initialisation de Firebase
+        // Initialisation Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const auth = getAuth(app);
 
-        // Vérifie si un utilisateur est connecté
+        // Vérification de l'authentification
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loadUserData(user.uid);
             } else {
-                window.location.href = '/login.html'; // Redirection si non connecté
+                window.location.href = '/login.html';
             }
         });
 
-        // Récupère les données utilisateur
+        // Chargement des données utilisateur
         function loadUserData(userId) {
             const userRef = ref(database, 'users/' + userId);
             get(userRef).then((snapshot) => {
@@ -50,15 +142,15 @@
             });
         }
 
-        // Affiche les données utilisateur
+        // Affichage des données utilisateur
         function displayUserData(userData) {
-            const userEmail = auth.currentUser.email; // Récupère l'email de l'utilisateur connecté
+            const userEmail = auth.currentUser.email;
             document.getElementById("userEmail").textContent = userData.email || userEmail || "Non défini";
-            document.getElementById("totalTeam").textContent = (userData.totalTeam || 0) + ' ';
+            document.getElementById("totalTeam").textContent = (userData.totalTeam || 0) + ' XOF';
             document.getElementById("totalRecharge").textContent = (userData.totalRecharge || 0) + ' XOF';
         }
 
-        // Génère un code aléatoire
+        // Génération de code
         function generateCode() {
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
             let code = '';
@@ -69,7 +161,7 @@
             document.getElementById("generatedCode").textContent = code;
         }
 
-        // Copie le code généré dans le presse-papiers
+        // Copie du code généré
         window.copyCode = function() {
             const code = document.getElementById("generatedCode").textContent;
             navigator.clipboard.writeText(code).then(() => {
@@ -79,9 +171,9 @@
             });
         }
 
-        // Copie le lien de parrainage dans le presse-papiers
+        // Copie du lien de parrainage
         window.copyLink = function() {
-            const link = document.getElementById("bonusLink").textContent; // Le lien à copier
+            const link = document.getElementById("bonusLink").textContent;
             navigator.clipboard.writeText(link).then(() => {
                 alert("Lien copié : " + link);
             }).catch(err => {
@@ -89,560 +181,10 @@
             });
         }
 
-        // Initialise les fonctions à charger à l'ouverture de la page
+        // Initialisation
         window.onload = () => {
-            generateCode(); // Génère un code lorsque la page est chargée
+            generateCode();
         };
-    </script>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background: linear-gradient(to bottom, #4CAF50 50%, #f7f9fc 50%); /* Dégradé vert et blanc */
-            height: 100vh; /* Prendre toute la hauteur de la fenêtre */
-        }
-        .gmail-section {
-            background-color: #000000; /* Section Gmail en noir */
-            padding: 10px;
-            color: white;
-            text-align: center;
-        }
-        .container {
-            display: flex; /* Utilisation de flexbox pour la mise en page */
-            justify-content: space-between;
-            padding: 20px;
-            margin: 10px;
-        }
-        .section {
-            flex: 1; /* Chaque section prend une largeur égale */
-            padding: 20px;
-            margin: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            background-color: white; /* Fond blanc pour chaque section */
-            text-align: center;
-        }
-        .code-section {
-            background-color: #000000; /* Fond noir pour la section du code généré */
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 8px;
-        }
-        .link-section {
-            background-color: #000000; /* Fond noir pour la section du lien */
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 8px;
-        }
-        .copy-button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #007bff; /* Couleur du bouton */
-            color: white; 
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .copy-button:hover {
-            background-color: #0056b3; /* Couleur du bouton au survol */
-        }
-        h1 {
-            margin: 0; 
-        }
-        .label { 
-            font-weight: bold; 
-            color: #007bff; 
-        }
-    </style>
-</head>
-<body>
-    <div class="gmail-section">
-        <p><span class="label">Email :</span> <span id="userEmail">Chargement...</span></p>
-    </div>
-    <div class="container">
-        <div class="section">
-            <p><span class="label">Total de l'équipe :</span> <span id="totalTeam">0 XOF</span></p>
-        </div>
-        <div class="section">
-            <p><span class="label"> Recharge total d'équipe :</span> <span id="totalRecharge">0 XOF</span></p>
-        </div>
-    </div>
-    <div class="code-section">
-        <h2>Code généré :</h2>
-        <p id="generatedCode">XXXXX</p> <!-- Placeholder pour le code généré -->
-        <button class="copy-button" onclick="copyCode()">Copier le code</button>
-    </div>
-    <div class="link-section">
-        <h2>Bonus de parrainage illimité :</h2>
-        <p id="bonusLink">https://sirope-user-invite-lien-sirope-com.vercel.app</p> <!-- Lien à copier -->
-        <button class="copy-button" onclick="copyLink()">Copier le lien</button>
-    </div>
-
-    <script>
-        // Initialisation du lien de parrainage (modifiez cette partie selon vos besoins)
-        const bonusLink = "<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historique des Retraits</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .history-container {
-            max-width: 800px;
-            margin: 30px auto;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h3 {
-            color: #2c3e50;
-            font-size: 28px;
-            margin-bottom: 25px;
-            text-align: center;
-            position: relative;
-            padding-bottom: 15px;
-        }
-
-        h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background: #3498db;
-            border-radius: 2px;
-        }
-
-        .total-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .info-card {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            text-align: center;
-            min-width: 200px;
-        }
-
-        .info-card h4 {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .info-card p {
-            color: #2c3e50;
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .history-item {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #eef2f7;
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 15px;
-        }
-
-        .history-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .history-details {
-            display: grid;
-            gap: 10px;
-        }
-
-        .history-item p {
-            margin: 0;
-            color: #34495e;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .history-item i {
-            color: #7f8c8d;
-            width: 20px;
-        }
-
-        .amount {
-            color: #2c3e50;
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .actions {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .delete-button {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .delete-button:hover {
-            background-color: #c0392b;
-        }
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            gap: 6px;
-        }
-
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .status-completed {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #7f8c8d;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #95a5a6;
-        }
-
-        .empty-state p {
-            font-size: 16px;
-        }
-
-        @media (max-width: 768px) {
-            .history-container {
-                margin: 10px;
-                padding: 20px;
-            }
-
-            .history-item {
-                grid-template-columns: 1fr;
-            }
-
-            .actions {
-                flex-direction: row;
-                justify-content: flex-end;
-            }
-
-            .total-info {
-                flex-direction: column;
-            }
-
-            .info-card {
-                width: 100%;
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .history-item {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        .loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100px;
-        }
-
-        .loader::after {
-            content: "";
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-</head>
-<body>
-    <div class="history-container">
-        <div class="header">
-            <h3>Historique des Retraits</h3>
-        </div>
-        
-        <div class="total-info">
-            <div class="info-card">
-                <h4>Total Retiré</h4>
-                <p id="totalWithdrawn">XOF 0</p>
-            </div>
-            <div class="info-card">
-                <h4>Total des Frais</h4>
-                <p id="totalFees">XOF 0</p>
-            </div>
-            <div class="info-card">
-                <h4>Nombre de Retraits</h4>
-                <p id="totalCount">0</p>
-            </div>
-        </div>
-
-        <div id="withdrawalHistory">
-            <div class="loader"></div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
-            authDomain: "ciaxe-727b1.firebaseapp.com",
-            databaseURL: "https://ciaxe-727b1-default-rtdb.firebaseio.com",
-            projectId: "ciaxe-727b1",
-            storageBucket: "ciaxe-727b1.appspot.com",
-            messagingSenderId: "52732576686",
-            appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-        const database = getDatabase();
-
-        function formatAmount(amount) {
-            return new Intl.NumberFormat('fr-FR').format(amount);
-        }
-
-        function formatDate(dateString) {
-            try {
-                // Si la date est un timestamp numérique
-                if (!isNaN(dateString)) {
-                    return new Date(parseInt(dateString)).toLocaleString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                }
-                
-                // Si la date est une chaîne ISO
-                const date = new Date(dateString);
-                if (!isNaN(date.getTime())) {
-                    return date.toLocaleString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                }
-
-                // Si on ne peut pas parser la date, on la retourne telle quelle
-                return dateString;
-            } catch (error) {
-                console.error('Erreur de formatage de date:', error, dateString);
-                return dateString;
-            }
-        }
-
-        function calculateTotals(data) {
-            let totalWithdrawn = 0;
-            let totalFees = 0;
-            let count = 0;
-
-            if (data) {
-                Object.values(data).forEach(item => {
-                    totalWithdrawn += parseFloat(item.amount) || 0;
-                    totalFees += parseFloat(item.fee) || 0;
-                    count++;
-                });
-            }
-
-            document.getElementById('totalWithdrawn').textContent = `XOF ${formatAmount(totalWithdrawn)}`;
-            document.getElementById('totalFees').textContent = `XOF ${formatAmount(totalFees)}`;
-            document.getElementById('totalCount').textContent = count;
-        }
-
-        function loadWithdrawalHistory() {
-            const user = auth.currentUser;
-            if (user) {
-                const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
-                onValue(withdrawalHistoryRef, (snapshot) => {
-                    const historyContainer = document.getElementById('withdrawalHistory');
-                    const data = snapshot.val();
-                    
-                    if (data) {
-                        historyContainer.innerHTML = '';
-                        Object.keys(data).reverse().forEach((key) => {
-                            const historyItem = data[key];
-                            const div = document.createElement('div');
-                            div.classList.add('history-item');
-                            
-                            const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
-                            const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
-                            
-                            // Log de débogage pour la date
-                            console.log('Date reçue:', historyItem.date);
-                            
-                            div.innerHTML = `
-                                <div class="history-details">
-                                    <p class="amount">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                        XOF ${formatAmount(historyItem.amount)}
-                                    </p>
-                                    <p>
-                                        <i class="fas fa-receipt"></i>
-                                        Frais: XOF ${formatAmount(historyItem.fee)}
-                                    </p>
-                                    <p>
-                                        <i class="fas fa-calendar"></i>
-                                        ${formatDate(historyItem.date)}
-                                    </p>
-                                    <p>
-                                        <span class="status ${statusClass}">
-                                            <i class="fas fa-${statusIcon}"></i>
-                                            ${historyItem.status}
-                                        </span>
-                                    </p>
-                                </div>
-                                <div class="actions">
-                                    <button class="delete-button" data-id="${key}">
-                                        <i class="fas fa-trash"></i>
-                                        Supprimer
-                                    </button>
-                                </div>
-                            `;
-                            historyContainer.appendChild(div);
-                        });
-
-                        calculateTotals(data);
-
-                        document.querySelectorAll('.delete-button').forEach((button) => {
-                            button.addEventListener('click', (event) => {
-                                const withdrawalId = event.target.closest('.delete-button').getAttribute('data-id');
-                                if (confirm('Êtes-vous sûr de vouloir supprimer cet historique ?')) {
-                                    deleteWithdrawal(withdrawalId);
-                                }
-                            });
-                        });
-                    } else {
-                        historyContainer.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-history"></i>
-                                <p>Aucun historique de retrait disponible.</p>
-                            </div>
-                        `;
-                        calculateTotals(null);
-                    }
-                });
-            }
-        }
-
-        function deleteWithdrawal(withdrawalId) {
-            const user = auth.currentUser;
-            if (user) {
-                const withdrawalRef = ref(database, 'users/' + user.uid + '/withdrawalHistory/' + withdrawalId);
-                remove(withdrawalRef)
-                    .then(() => {
-                        console.log('Retrait supprimé avec succès');
-                    })
-                    .catch((error) => {
-                        console.error('Erreur lors de la suppression :', error);
-                        alert('Une erreur est survenue lors de la suppression.');
-                    });
-            }
-        }
-
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                loadWithdrawalHistory();
-            } else {
-                window.location.href = "login.html";
-            }
-        });
-    </script>
-</body>
-</html>"; // Remplacez par votre lien réel
-        document.getElementById("bonusLink").textContent = bonusLink;
     </script>
 </body>
 </html>

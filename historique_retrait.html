@@ -4,38 +4,285 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historique des Retraits</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-        }
-        .history-container {
-            margin: 50px auto;
-            width: 300px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
             padding: 20px;
-            border: 1px solid #ccc;
+            line-height: 1.6;
+        }
+
+        .history-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: #3498db;
+            border-radius: 2px;
+        }
+
+        .total-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 15px 25px;
             border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+            min-width: 200px;
         }
+
+        .info-card h4 {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .info-card p {
+            color: #2c3e50;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
         .history-item {
-            padding: 10px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #eef2f7;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
         }
+
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-details {
+            display: grid;
+            gap: 10px;
+        }
+
+        .history-item p {
+            margin: 0;
+            color: #34495e;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-item i {
+            color: #7f8c8d;
+            width: 20px;
+        }
+
+        .amount {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
         .delete-button {
-            background-color: red;
+            background-color: #e74c3c;
             color: white;
             border: none;
-            padding: 5px;
-            border-radius: 3px;
+            padding: 8px 16px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            gap: 6px;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status i {
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #95a5a6;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .history-container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .history-item {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+
+            .total-info {
+                flex-direction: column;
+            }
+
+            .info-card {
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .history-item {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Loading spinner */
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+
+        .loader::after {
+            content: "";
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-
     <div class="history-container">
-        <h3>Historique des Retraits</h3>
-        <div id="withdrawalHistory"></div>
+        <div class="header">
+            <h3>Historique des Retraits</h3>
+        </div>
+        
+        <div class="total-info">
+            <div class="info-card">
+                <h4>Total Retiré</h4>
+                <p id="totalWithdrawn">XOF 0</p>
+            </div>
+            <div class="info-card">
+                <h4>Total des Frais</h4>
+                <p id="totalFees">XOF 0</p>
+            </div>
+            <div class="info-card">
+                <h4>Nombre de Retraits</h4>
+                <p id="totalCount">0</p>
+            </div>
+        </div>
+
+        <div id="withdrawalHistory">
+            <div class="loader"></div>
+        </div>
     </div>
 
     <script type="module">
@@ -57,6 +304,41 @@
         const auth = getAuth();
         const database = getDatabase();
 
+        // Fonction pour formatter les montants en XOF
+        function formatAmount(amount) {
+            return new Intl.NumberFormat('fr-FR').format(amount);
+        }
+
+        // Fonction pour formater la date
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Fonction pour calculer les totaux
+        function calculateTotals(data) {
+            let totalWithdrawn = 0;
+            let totalFees = 0;
+            let count = 0;
+
+            if (data) {
+                Object.values(data).forEach(item => {
+                    totalWithdrawn += parseFloat(item.amount) || 0;
+                    totalFees += parseFloat(item.fee) || 0;
+                    count++;
+                });
+            }
+
+            document.getElementById('totalWithdrawn').textContent = `XOF ${formatAmount(totalWithdrawn)}`;
+            document.getElementById('totalFees').textContent = `XOF ${formatAmount(totalFees)}`;
+            document.getElementById('totalCount').textContent = count;
+        }
+
         // Fonction pour charger l'historique des retraits
         function loadWithdrawalHistory() {
             const user = auth.currentUser;
@@ -64,33 +346,68 @@
                 const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
                 onValue(withdrawalHistoryRef, (snapshot) => {
                     const historyContainer = document.getElementById('withdrawalHistory');
-                    historyContainer.innerHTML = ''; // Réinitialiser l'historique affiché
-
                     const data = snapshot.val();
+                    
                     if (data) {
-                        Object.keys(data).forEach((key) => {
+                        historyContainer.innerHTML = '';
+                        Object.keys(data).reverse().forEach((key) => {
                             const historyItem = data[key];
                             const div = document.createElement('div');
                             div.classList.add('history-item');
+                            
+                            const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
+                            const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
+                            
                             div.innerHTML = `
-                                <p>Montant retiré : XOF ${historyItem.amount}</p>
-                                <p>Frais : XOF ${historyItem.fee}</p>
-                                <p>Date : ${historyItem.date}</p>
-                                <p>Statut : ${historyItem.status}</p>
-                                <button class="delete-button" data-id="${key}">Supprimer</button>
+                                <div class="history-details">
+                                    <p class="amount">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        XOF ${formatAmount(historyItem.amount)}
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-receipt"></i>
+                                        Frais: XOF ${formatAmount(historyItem.fee)}
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-calendar"></i>
+                                        ${formatDate(historyItem.date)}
+                                    </p>
+                                    <p>
+                                        <span class="status ${statusClass}">
+                                            <i class="fas fa-${statusIcon}"></i>
+                                            ${historyItem.status}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="actions">
+                                    <button class="delete-button" data-id="${key}">
+                                        <i class="fas fa-trash"></i>
+                                        Supprimer
+                                    </button>
+                                </div>
                             `;
                             historyContainer.appendChild(div);
                         });
 
-                        // Ajouter un écouteur sur chaque bouton de suppression
+                        calculateTotals(data);
+
+                        // Ajouter les écouteurs d'événements pour les boutons de suppression
                         document.querySelectorAll('.delete-button').forEach((button) => {
                             button.addEventListener('click', (event) => {
-                                const withdrawalId = event.target.getAttribute('data-id');
-                                deleteWithdrawal(withdrawalId);
+                                if (confirm('Êtes-vous sûr de vouloir supprimer cet historique ?')) {
+                                    const withdrawalId = event.target.getAttribute('data-id');
+                                    deleteWithdrawal(withdrawalId);
+                                }
                             });
                         });
                     } else {
-                        historyContainer.innerHTML = '<p>Aucun historique de retrait.</p>';
+                        historyContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-history"></i>
+                                <p>Aucun historique de retrait disponible.</p>
+                            </div>
+                        `;
+                        calculateTotals(null);
                     }
                 });
             }
@@ -101,25 +418,25 @@
             const user = auth.currentUser;
             if (user) {
                 const withdrawalRef = ref(database, 'users/' + user.uid + '/withdrawalHistory/' + withdrawalId);
-                remove(withdrawalRef).then(() => {
-                    alert('Historique supprimé avec succès.');
-                    loadWithdrawalHistory(); // Rafraîchir l'historique après suppression
-                }).catch((error) => {
-                    console.error('Erreur lors de la suppression de l\'historique :', error);
-                });
+                remove(withdrawalRef)
+                    .then(() => {
+                        // La mise à jour de l'interface se fera automatiquement grâce à onValue
+                    })
+                    .catch((error) => {
+                        console.error('Erreur lors de la suppression :', error);
+                        alert('Une erreur est survenue lors de la suppression.');
+                    });
             }
         }
 
-        // Vérifier si l'utilisateur est connecté et récupérer l'historique
+        // Vérifier si l'utilisateur est connecté
         auth.onAuthStateChanged((user) => {
             if (user) {
                 loadWithdrawalHistory();
             } else {
-                alert("Vous devez être connecté pour voir l'historique des retraits.");
                 window.location.href = "login.html";
             }
         });
     </script>
-
 </body>
 </html>

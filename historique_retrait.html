@@ -294,55 +294,74 @@
             appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
         };
 
+        // Initialisation de Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
         const database = getDatabase();
 
+        // Formater les montants en format français
         function formatAmount(amount) {
             return new Intl.NumberFormat('fr-FR').format(amount);
         }
 
+        // Nouvelle fonction de formatage de date avec gestion du fuseau horaire
         function formatDate(dateString) {
             try {
                 let date;
                 
-                // Si la date est un timestamp numérique
+                // Gérer différents formats de date possibles
+                if (!dateString) {
+                    console.error('Date non définie');
+                    return 'Date inconnue';
+                }
+
+                // Si c'est un timestamp en millisecondes
                 if (!isNaN(dateString)) {
                     date = new Date(parseInt(dateString));
-                } else {
-                    // Si la date est une chaîne ISO ou autre format
+                } 
+                // Si c'est un timestamp en secondes
+                else if (!isNaN(dateString) && dateString.toString().length === 10) {
+                    date = new Date(parseInt(dateString) * 1000);
+                }
+                // Si c'est une chaîne de date
+                else {
                     date = new Date(dateString);
                 }
 
                 // Vérifier si la date est valide
-                if (!isNaN(date.getTime())) {
-                    // Créer un formateur avec les options spécifiques pour le format français
-                    const formatter = new Intl.DateTimeFormat('fr-FR', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    });
-
-                    // Formater la date
-                    let formattedDate = formatter.format(date);
-                    
-                    // Capitaliser le premier caractère du mois
-                    formattedDate = formattedDate.replace(/^\w|\s\w/g, letter => letter.toUpperCase());
-                    
-                    return formattedDate;
+                if (isNaN(date.getTime())) {
+                    console.error('Date invalide:', dateString);
+                    return 'Date invalide';
                 }
 
-                console.error('Date invalide:', dateString);
-                return dateString;
+                // Formatter la date pour le fuseau horaire de l'Afrique de l'Ouest
+                const formatter = new Intl.DateTimeFormat('fr-FR', {
+                    timeZone: 'Africa/Dakar',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+
+                let formattedDate = formatter.format(date);
+                
+                // Capitaliser le premier caractère du mois
+                formattedDate = formattedDate.replace(/^\w|\s\w/g, letter => letter.toUpperCase());
+                
+                // Log pour débogage
+                console.log('Date originale:', dateString);
+                console.log('Date formatée:', formattedDate);
+                
+                return formattedDate;
             } catch (error) {
                 console.error('Erreur de formatage de date:', error, dateString);
-                return dateString;
+                return 'Erreur de date';
             }
         }
 
+        // Calculer les totaux
         function calculateTotals(data) {
             let totalWithdrawn = 0;
             let totalFees = 0;
@@ -350,8 +369,12 @@
 
             if (data) {
                 Object.values(data).forEach(item => {
-                    totalWithdrawn += parseFloat(item.amount) || 0;
-                    totalFees += parseFloat(item.fee) || 0;
+                    if (!isNaN(item.amount)) {
+                        totalWithdrawn += parseFloat(item.amount) || 0;
+                    }
+                    if (!isNaN(item.fee)) {
+                        totalFees += parseFloat(item.fee) || 0;
+                    }
                     count++;
                 });
             }
@@ -361,93 +384,120 @@
             document.getElementById('totalCount').textContent = count;
         }
 
+        // Charger l'historique des retraits
         function loadWithdrawalHistory() {
             const user = auth.currentUser;
-            if (user) {
-                const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
-                onValue(withdrawalHistoryRef, (snapshot) => {
-                    const historyContainer = document.getElementById('withdrawalHistory');
-                    const data = snapshot.val();
+            if (!user) {
+                console.error('Aucun utilisateur connecté');
+                return;
+            }
+
+            const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
+            
+            onValue(withdrawalHistoryRef, (snapshot) => {
+                const historyContainer = document.getElementById('withdrawalHistory');
+                const data = snapshot.val();
+                
+                if (data) {
+                    historyContainer.innerHTML = '';
                     
-                    if (data) {
-                        historyContainer.innerHTML = '';
-                        Object.keys(data).reverse().forEach((key) => {
-                            const historyItem = data[key];
-                            const div = document.createElement('div');
-                            div.classList.add('history-item');
-                            
-                            const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
-                            const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
-                            
-                            div.innerHTML = `
-                                <div class="history-details">
-                                    <p class="amount">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                        XOF ${formatAmount(historyItem.amount)}
-                                    </p>
-                                    <p>
-                                        <i class="fas fa-receipt"></i>
-                                        Frais: XOF ${formatAmount(historyItem.fee)}
-                                    </p>
-                                    <p>
-                                        <i class="fas fa-calendar"></i>
-                                        ${formatDate(historyItem.date)}
-                                    </p>
-                                    <p>
-                                        <span class="status ${statusClass}">
-                                            <i class="fas fa-${statusIcon}"></i>
-                                            ${historyItem.status}
-                                        </span>
-                                    </p>
-                                </div>
-                                <div class="actions">
-                                    <button class="delete-button" data-id="${key}">
-                                        <i class="fas fa-trash"></i>
-                                        Supprimer
-                                    </button>
-                                </div>
-                            `;
-                            historyContainer.appendChild(div);
-                        });
+                    // Trier les retraits par date (du plus récent au plus ancien)
+                    const sortedKeys = Object.keys(data).sort((a, b) => {
+                        const dateA = new Date(data[a].date);
+                        const dateB = new Date(data[b].date);
+                        return dateB - dateA;
+                    });
 
-                        calculateTotals(data);
-
-                        document.querySelectorAll('.delete-button').forEach((button) => {
-                            button.addEventListener('click', (event) => {
-                                const withdrawalId = event.target.closest('.delete-button').getAttribute('data-id');
-                                if (confirm('Êtes-vous sûr de vouloir supprimer cet historique ?')) {
-                                    deleteWithdrawal(withdrawalId);
-                                }
-                            });
-                        });
-                    } else {
-                        historyContainer.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-history"></i>
-                                <p>Aucun historique de retrait disponible.</p>
+                    sortedKeys.forEach((key) => {
+                        const historyItem = data[key];
+                        const div = document.createElement('div');
+                        div.classList.add('history-item');
+                        
+                        const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
+                        const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
+                        
+                        div.innerHTML = `
+                            <div class="history-details">
+                                <p class="amount">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    XOF ${formatAmount(historyItem.amount)}
+                                </p>
+                                <p>
+                                    <i class="fas fa-receipt"></i>
+                                    Frais: XOF ${formatAmount(historyItem.fee)}
+                                </p>
+                                <p>
+                                    <i class="fas fa-calendar"></i>
+                                    ${formatDate(historyItem.date)}
+                                </p>
+                                <p>
+                                    <span class="status ${statusClass}">
+                                        <i class="fas fa-${statusIcon}"></i>
+                                        ${historyItem.status}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="actions">
+                                <button class="delete-button" data-id="${key}">
+                                    <i class="fas fa-trash"></i>
+                                    Supprimer
+                                </button>
                             </div>
                         `;
-                        calculateTotals(null);
-                    }
-                });
-            }
+                        historyContainer.appendChild(div);
+                    });
+
+                    calculateTotals(data);
+
+                    // Ajouter les écouteurs d'événements pour les boutons de suppression
+                    document.querySelectorAll('.delete-button').forEach((button) => {
+                        button.addEventListener('click', (event) => {
+                            const withdrawalId = event.target.closest('.delete-button').getAttribute('data-id');
+                            if (confirm('Êtes-vous sûr de vouloir supprimer cet historique ?')) {
+                                deleteWithdrawal(withdrawalId);
+                            }
+                        });
+                    });
+                } else {
+                    historyContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>Aucun historique de retrait disponible.</p>
+                        </div>
+                    `;
+                    calculateTotals(null);
+                }
+            }, (error) => {
+                console.error('Erreur lors du chargement de l\'historique:', error);
+                document.getElementById('withdrawalHistory').innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Une erreur est survenue lors du chargement de l'historique.</p>
+                    </div>
+                `;
+            });
         }
 
+        // Supprimer un retrait
         function deleteWithdrawal(withdrawalId) {
             const user = auth.currentUser;
-            if (user) {
-                const withdrawalRef = ref(database, 'users/' + user.uid + '/withdrawalHistory/' + withdrawalId);
-                remove(withdrawalRef)
-                    .then(() => {
-                        console.log('Retrait supprimé avec succès');
-                    })
-                    .catch((error) => {
-                        console.error('Erreur lors de la suppression :', error);
-                        alert('Une erreur est survenue lors de la suppression.');
-                    });
+            if (!user) {
+                console.error('Aucun utilisateur connecté');
+                return;
             }
+
+            const withdrawalRef = ref(database, 'users/' + user.uid + '/withdrawalHistory/' + withdrawalId);
+            remove(withdrawalRef)
+                .then(() => {
+                    console.log('Retrait supprimé avec succès');
+                })
+                .catch((error) => {
+                    console.error('Erreur lors de la suppression:', error);
+                    alert('Une erreur est survenue lors de la suppression.');
+                });
         }
 
+        // Gérer l'état de l'authentification
         auth.onAuthStateChanged((user) => {
             if (user) {
                 loadWithdrawalHistory();

@@ -304,30 +304,38 @@
 
         function formatDate(dateString) {
             try {
+                let date;
+                
                 // Si la date est un timestamp numérique
                 if (!isNaN(dateString)) {
-                    return new Date(parseInt(dateString)).toLocaleString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                }
-                
-                // Si la date est une chaîne ISO
-                const date = new Date(dateString);
-                if (!isNaN(date.getTime())) {
-                    return date.toLocaleString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
+                    date = new Date(parseInt(dateString));
+                } else {
+                    // Si la date est une chaîne ISO ou autre format
+                    date = new Date(dateString);
                 }
 
-                // Si on ne peut pas parser la date, on la retourne telle quelle
+                // Vérifier si la date est valide
+                if (!isNaN(date.getTime())) {
+                    // Créer un formateur avec les options spécifiques pour le format français
+                    const formatter = new Intl.DateTimeFormat('fr-FR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+
+                    // Formater la date
+                    let formattedDate = formatter.format(date);
+                    
+                    // Capitaliser le premier caractère du mois
+                    formattedDate = formattedDate.replace(/^\w|\s\w/g, letter => letter.toUpperCase());
+                    
+                    return formattedDate;
+                }
+
+                console.error('Date invalide:', dateString);
                 return dateString;
             } catch (error) {
                 console.error('Erreur de formatage de date:', error, dateString);
@@ -370,9 +378,6 @@
                             
                             const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
                             const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
-                            
-                            // Log de débogage pour la date
-                            console.log('Date reçue:', historyItem.date);
                             
                             div.innerHTML = `
                                 <div class="history-details">

@@ -6,7 +6,7 @@
     <title>Historique des Retraits</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-          * {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -130,31 +130,6 @@
             font-size: 16px;
         }
 
-        .actions {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .delete-button {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .delete-button:hover {
-            background-color: #c0392b;
-        }
-
         .status {
             display: inline-flex;
             align-items: center;
@@ -173,6 +148,24 @@
         .status-completed {
             background-color: #d4edda;
             color: #155724;
+        }
+
+        .delete-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b;
         }
 
         .empty-state {
@@ -213,21 +206,6 @@
             .info-card {
                 width: 100%;
             }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .history-item {
-            animation: fadeIn 0.5s ease-out forwards;
         }
 
         .loader {
@@ -284,7 +262,6 @@
         import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
         import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
             authDomain: "ciaxe-727b1.firebaseapp.com",
@@ -295,34 +272,52 @@
             appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
         };
 
-        // Initialisation Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
         const database = getDatabase();
 
-        // Fonction utilitaire pour formater les montants
+        // Fonction pour formater les montants
         const formatAmount = (amount) => {
             return new Intl.NumberFormat('fr-FR').format(amount);
         };
 
-        // Fonction améliorée pour formater les dates
-        const formatDate = (dateString) => {
+        // Nouvelle fonction de formatage de date améliorée
+        const formatDate = (dateInput) => {
             try {
-                let date;
+                // Log pour débogage
+                console.log('Date reçue:', dateInput, 'Type:', typeof dateInput);
                 
-                // Gestion des timestamps numériques
-                if (!isNaN(dateString)) {
-                    date = new Date(parseInt(dateString));
-                } else {
-                    date = new Date(dateString);
+                let timestamp;
+
+                // Si c'est déjà un nombre
+                if (typeof dateInput === 'number') {
+                    timestamp = dateInput;
+                }
+                // Si c'est une chaîne qui peut être convertie en nombre
+                else if (typeof dateInput === 'string' && !isNaN(dateInput)) {
+                    timestamp = parseInt(dateInput);
+                }
+                // Si c'est un objet Date
+                else if (dateInput instanceof Date) {
+                    timestamp = dateInput.getTime();
+                }
+                // Si c'est un objet Timestamp Firebase (avec seconds et nanoseconds)
+                else if (dateInput && typeof dateInput === 'object' && 'seconds' in dateInput) {
+                    timestamp = dateInput.seconds * 1000;
+                }
+                // Si c'est une chaîne de date ISO
+                else if (typeof dateInput === 'string') {
+                    timestamp = new Date(dateInput).getTime();
                 }
 
-                // Vérification de la validité de la date
-                if (isNaN(date.getTime())) {
-                    console.error('Date invalide:', dateString);
-                    return 'Date invalide';
+                // Vérification finale
+                if (!timestamp || isNaN(timestamp)) {
+                    console.error('Impossible de convertir en timestamp:', dateInput);
+                    return 'Date non disponible';
                 }
 
+                // Création de l'objet Date et formatage
+                const date = new Date(timestamp);
                 return date.toLocaleString('fr-FR', {
                     year: 'numeric',
                     month: 'long',
@@ -331,77 +326,128 @@
                     minute: '2-digit',
                     hour12: false
                 });
+
             } catch (error) {
-                console.error('Erreur de formatage de date:', error);
-                return 'Date invalide';
+                console.error('Erreur lors du formatage de la date:', error);
+                return 'Date non disponible';
             }
         };
 
-        // Fonction pour calculer les totaux
         const calculateTotals = (data) => {
-            const totals = {
-                withdrawn: 0,
-                fees: 0,
-                count: 0
-            };
+            let totalWithdrawn = 0;
+            let totalFees = 0;
+            let count = 0;
 
             if (data) {
                 Object.values(data).forEach(item => {
-                    totals.withdrawn += parseFloat(item.amount) || 0;
-                    totals.fees += parseFloat(item.fee) || 0;
-                    totals.count++;
+                    totalWithdrawn += parseFloat(item.amount) || 0;
+                    totalFees += parseFloat(item.fee) || 0;
+                    count++;
                 });
             }
 
-            document.getElementById('totalWithdrawn').textContent = `XOF ${formatAmount(totals.withdrawn)}`;
-            document.getElementById('totalFees').textContent = `XOF ${formatAmount(totals.fees)}`;
-            document.getElementById('totalCount').textContent = totals.count;
+            document.getElementById('totalWithdrawn').textContent = `XOF ${formatAmount(totalWithdrawn)}`;
+            document.getElementById('totalFees').textContent = `XOF ${formatAmount(totalFees)}`;
+            document.getElementById('totalCount').textContent = count;
         };
 
-        // Fonction pour créer un élément d'historique
-        const createHistoryItem = (historyItem, key) => {
-            const div = document.createElement('div');
-            div.classList.add('history-item');
-            
-            const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
-            const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
-            
-            div.innerHTML = `
-                <div class="history-details">
-                    <p class="amount">
-                        <i class="fas fa-money-bill-wave"></i>
-                        XOF ${formatAmount(historyItem.amount)}
-                    </p>
-                    <p>
-                        <i class="fas fa-receipt"></i>
-                        Frais: XOF ${formatAmount(historyItem.fee)}
-                    </p>
-                    <p>
-                        <i class="fas fa-calendar"></i>
-                        ${formatDate(historyItem.date)}
-                    </p>
-                    <p>
-                        <span class="status ${statusClass}">
-                            <i class="fas fa-${statusIcon}"></i>
-                            ${historyItem.status}
-                        </span>
-                    </p>
-                </div>
-                <div class="actions">
-                    <button class="delete-button" data-id="${key}">
-                        <i class="fas fa-trash"></i>
-                        Supprimer
-                    </button>
-                </div>
-            `;
-            return div;
+        const loadWithdrawalHistory = () => {
+            const user = auth.currentUser;
+            if (user) {
+                const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
+                
+                onValue(withdrawalHistoryRef, (snapshot) => {
+                    const historyContainer = document.getElementById('withdrawalHistory');
+                    const data = snapshot.val();
+                    
+                    if (data) {
+                        historyContainer.innerHTML = '';
+                        
+                        // Conversion en tableau et tri par date
+                        const sortedItems = Object.entries(data)
+                            .map(([key, value]) => ({...value, id: key}))
+                            .sort((a, b) => {
+                                // Log pour débogage des dates pendant le tri
+                                console.log('Comparaison dates:', 
+                                    {a: a.date, b: b.date, 
+                                     aType: typeof a.date, 
+                                     bType: typeof b.date});
+                                
+                                let dateA = new Date(a.date).getTime();
+                                let dateB = new Date(b.date).getTime();
+                                return dateB - dateA; // Tri décroissant
+                            });
+
+                        sortedItems.forEach(item => {
+                            const div = document.createElement('div');
+                            div.classList.add('history-item');
+                            
+                            const statusClass = item.status.toLowerCase() === 'completed' ? 
+                                'status-completed' : 'status-pending';
+                            const statusIcon = item.status.toLowerCase() === 'completed' ? 
+                                'check-circle' : 'clock';
+                            
+                            div.innerHTML = `
+                                <div class="history-details">
+                                    <p class="amount">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        XOF ${formatAmount(item.amount)}
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-receipt"></i>
+                                        Frais: XOF ${formatAmount(item.fee)}
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-calendar"></i>
+                                        ${formatDate(item.date)}
+                                    </p>
+                                    <p>
+                                        <span class="status ${statusClass}">
+                                            <i class="fas fa-${statusIcon}"></i>
+                                            ${item.status}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="actions">
+                                    <button class="delete-button" data-id="${item.id}">
+                                        <i class="fas fa-trash"></i>
+                                        Supprimer
+                                    </button>
+                                </div>
+                            `;
+                            
+                            historyContainer.appendChild(div);
+                        });
+
+                        calculateTotals(data);
+
+                        // Ajout des écouteurs pour les boutons de suppression
+                        document.querySelectorAll('.delete-button').forEach(button => {
+                            button.addEventListener('click', (e) => {
+                                const withdrawalId = e.target.closest('.delete-button').dataset.id;
+                                if (confirm('Êtes-vous sûr de vouloir supprimer cet historique ?')) {
+                                    deleteWithdrawal(withdrawalId);
+                                }
+                            });
+                        });
+                    } else {
+                        historyContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-history"></i>
+                                <p>Aucun historique de retrait disponible.</p>
+                            </div>`;
+                        calculateTotals(null);
+                    }
+                });
+            }
         };
 
-        // Fonction pour supprimer un retrait
         const deleteWithdrawal = async (withdrawalId) => {
             try {
                 const user = auth.currentUser;
-                if (!user) throw new Error('Utilisateur non connecté');
+                if (!user) {
+                    throw new Error('Utilisateur non connecté');
+                }
 
                 const withdrawalRef = ref(database, `users/${user.uid}/withdrawalHistory/${withdrawalId}`);
                 await remove(withdrawalRef);
@@ -412,56 +458,30 @@
             }
         };
 
-        // Fonction pour charger l'historique des retraits
-        const loadWithdrawalHistory = () => {
-            const user = auth.currentUser;
-            if (!user) return;
-
-            const withdrawalHistoryRef = ref(database, `users/${user.uid}/withdrawalHistory`);
-            onValue(withdrawalHistoryRef, (snapshot) => {
-                const historyContainer = document.getElementById('withdrawalHistory');
-                const data = snapshot.val();
-                
-                if (data) {
-                    historyContainer.innerHTML = '';
-                    Object.keys(data)
-                        .sort((a, b) => data[b].date - data[a].date) // Tri par date décroissante
-                        .forEach(key => {
-                            const historyItem = data[key];
-                            const itemElement = createHistoryItem(historyItem, key);
-                            historyContainer.appendChild(itemElement);
-                        });
-
-                    calculateTotals(data);
-
-                    // Ajout des écouteurs d'événements pour les boutons de suppression
-                    document.querySelectorAll('.delete-button').forEach(button => {
-                        button.addEventListener('click', (e) => {
-                            const withdrawalId = e.target.closest('.delete-button').dataset.id;
-                            if (confirm('Êtes-vous sûr de vouloir supprimer cet historique ?')) {
-                                deleteWithdrawal(withdrawalId);
-                            }
-                        });
-                    });
-                } else {
-                    historyContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-history"></i>
-                            <p>Aucun historique de retrait disponible.</p>
-                        </div>
-                    `;
-                    calculateTotals(null);
-                }
-            });
-        };
-
-        // Gestionnaire d'authentification
+        // Gestionnaire d'état d'authentification
         auth.onAuthStateChanged((user) => {
             if (user) {
+                console.log('Utilisateur connecté:', user.uid);
                 loadWithdrawalHistory();
             } else {
+                console.log('Utilisateur non connecté, redirection...');
                 window.location.href = "login.html";
             }
+        });
+
+        // Fonction utilitaire pour logger les erreurs
+        const logError = (error, context) => {
+            console.error(`Erreur ${context}:`, error);
+            console.error('Stack trace:', error.stack);
+        };
+
+        // Gestion globale des erreurs
+        window.addEventListener('error', (event) => {
+            logError(event.error, 'globale');
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            logError(event.reason, 'promesse non gérée');
         });
     </script>
 </body>

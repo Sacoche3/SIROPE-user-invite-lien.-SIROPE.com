@@ -6,7 +6,7 @@
     <title>Historique des Retraits</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
+          * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -284,6 +284,7 @@
         import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
         import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBFREc4PyC6VTYgXN3eEV9_AYpVo6nkyco",
             authDomain: "ciaxe-727b1.firebaseapp.com",
@@ -294,155 +295,167 @@
             appId: "1:52732576686:web:70f5d27fc58bc5bd31fe3f"
         };
 
+        // Initialisation Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
         const database = getDatabase();
 
-        function formatAmount(amount) {
+        // Fonction utilitaire pour formater les montants
+        const formatAmount = (amount) => {
             return new Intl.NumberFormat('fr-FR').format(amount);
-        }
+        };
 
-        function formatDate(dateString) {
+        // Fonction améliorée pour formater les dates
+        const formatDate = (dateString) => {
             try {
-                // Si la date est un timestamp numérique
-                if (!isNaN(dateString)) {
-                    return new Date(parseInt(dateString)).toLocaleString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                }
+                let date;
                 
-                // Si la date est une chaîne ISO
-                const date = new Date(dateString);
-                if (!isNaN(date.getTime())) {
-                    return date.toLocaleString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
+                // Gestion des timestamps numériques
+                if (!isNaN(dateString)) {
+                    date = new Date(parseInt(dateString));
+                } else {
+                    date = new Date(dateString);
                 }
 
-                // Si on ne peut pas parser la date, on la retourne telle quelle
-                return dateString;
-            } catch (error) {
-                console.error('Erreur de formatage de date:', error, dateString);
-                return dateString;
-            }
-        }
+                // Vérification de la validité de la date
+                if (isNaN(date.getTime())) {
+                    console.error('Date invalide:', dateString);
+                    return 'Date invalide';
+                }
 
-        function calculateTotals(data) {
-            let totalWithdrawn = 0;
-            let totalFees = 0;
-            let count = 0;
+                return date.toLocaleString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+            } catch (error) {
+                console.error('Erreur de formatage de date:', error);
+                return 'Date invalide';
+            }
+        };
+
+        // Fonction pour calculer les totaux
+        const calculateTotals = (data) => {
+            const totals = {
+                withdrawn: 0,
+                fees: 0,
+                count: 0
+            };
 
             if (data) {
                 Object.values(data).forEach(item => {
-                    totalWithdrawn += parseFloat(item.amount) || 0;
-                    totalFees += parseFloat(item.fee) || 0;
-                    count++;
+                    totals.withdrawn += parseFloat(item.amount) || 0;
+                    totals.fees += parseFloat(item.fee) || 0;
+                    totals.count++;
                 });
             }
 
-            document.getElementById('totalWithdrawn').textContent = `XOF ${formatAmount(totalWithdrawn)}`;
-            document.getElementById('totalFees').textContent = `XOF ${formatAmount(totalFees)}`;
-            document.getElementById('totalCount').textContent = count;
-        }
+            document.getElementById('totalWithdrawn').textContent = `XOF ${formatAmount(totals.withdrawn)}`;
+            document.getElementById('totalFees').textContent = `XOF ${formatAmount(totals.fees)}`;
+            document.getElementById('totalCount').textContent = totals.count;
+        };
 
-        function loadWithdrawalHistory() {
+        // Fonction pour créer un élément d'historique
+        const createHistoryItem = (historyItem, key) => {
+            const div = document.createElement('div');
+            div.classList.add('history-item');
+            
+            const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
+            const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
+            
+            div.innerHTML = `
+                <div class="history-details">
+                    <p class="amount">
+                        <i class="fas fa-money-bill-wave"></i>
+                        XOF ${formatAmount(historyItem.amount)}
+                    </p>
+                    <p>
+                        <i class="fas fa-receipt"></i>
+                        Frais: XOF ${formatAmount(historyItem.fee)}
+                    </p>
+                    <p>
+                        <i class="fas fa-calendar"></i>
+                        ${formatDate(historyItem.date)}
+                    </p>
+                    <p>
+                        <span class="status ${statusClass}">
+                            <i class="fas fa-${statusIcon}"></i>
+                            ${historyItem.status}
+                        </span>
+                    </p>
+                </div>
+                <div class="actions">
+                    <button class="delete-button" data-id="${key}">
+                        <i class="fas fa-trash"></i>
+                        Supprimer
+                    </button>
+                </div>
+            `;
+            return div;
+        };
+
+        // Fonction pour supprimer un retrait
+        const deleteWithdrawal = async (withdrawalId) => {
+            try {
+                const user = auth.currentUser;
+                if (!user) throw new Error('Utilisateur non connecté');
+
+                const withdrawalRef = ref(database, `users/${user.uid}/withdrawalHistory/${withdrawalId}`);
+                await remove(withdrawalRef);
+                console.log('Retrait supprimé avec succès');
+            } catch (error) {
+                console.error('Erreur lors de la suppression :', error);
+                alert('Une erreur est survenue lors de la suppression.');
+            }
+        };
+
+        // Fonction pour charger l'historique des retraits
+        const loadWithdrawalHistory = () => {
             const user = auth.currentUser;
-            if (user) {
-                const withdrawalHistoryRef = ref(database, 'users/' + user.uid + '/withdrawalHistory');
-                onValue(withdrawalHistoryRef, (snapshot) => {
-                    const historyContainer = document.getElementById('withdrawalHistory');
-                    const data = snapshot.val();
-                    
-                    if (data) {
-                        historyContainer.innerHTML = '';
-                        Object.keys(data).reverse().forEach((key) => {
+            if (!user) return;
+
+            const withdrawalHistoryRef = ref(database, `users/${user.uid}/withdrawalHistory`);
+            onValue(withdrawalHistoryRef, (snapshot) => {
+                const historyContainer = document.getElementById('withdrawalHistory');
+                const data = snapshot.val();
+                
+                if (data) {
+                    historyContainer.innerHTML = '';
+                    Object.keys(data)
+                        .sort((a, b) => data[b].date - data[a].date) // Tri par date décroissante
+                        .forEach(key => {
                             const historyItem = data[key];
-                            const div = document.createElement('div');
-                            div.classList.add('history-item');
-                            
-                            const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
-                            const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
-                            
-                            // Log de débogage pour la date
-                            console.log('Date reçue:', historyItem.date);
-                            
-                            div.innerHTML = `
-                                <div class="history-details">
-                                    <p class="amount">
-                                        <i class="fas fa-money-bill-wave"></i>
-                                        XOF ${formatAmount(historyItem.amount)}
-                                    </p>
-                                    <p>
-                                        <i class="fas fa-receipt"></i>
-                                        Frais: XOF ${formatAmount(historyItem.fee)}
-                                    </p>
-                                    <p>
-                                        <i class="fas fa-calendar"></i>
-                                        ${formatDate(historyItem.date)}
-                                    </p>
-                                    <p>
-                                        <span class="status ${statusClass}">
-                                            <i class="fas fa-${statusIcon}"></i>
-                                            ${historyItem.status}
-                                        </span>
-                                    </p>
-                                </div>
-                                <div class="actions">
-                                    <button class="delete-button" data-id="${key}">
-                                        <i class="fas fa-trash"></i>
-                                        Supprimer
-                                    </button>
-                                </div>
-                            `;
-                            historyContainer.appendChild(div);
+                            const itemElement = createHistoryItem(historyItem, key);
+                            historyContainer.appendChild(itemElement);
                         });
 
-                        calculateTotals(data);
+                    calculateTotals(data);
 
-                        document.querySelectorAll('.delete-button').forEach((button) => {
-                            button.addEventListener('click', (event) => {
-                                const withdrawalId = event.target.closest('.delete-button').getAttribute('data-id');
-                                if (confirm('Êtes-vous sûr de vouloir supprimer cet historique ?')) {
-                                    deleteWithdrawal(withdrawalId);
-                                }
-                            });
+                    // Ajout des écouteurs d'événements pour les boutons de suppression
+                    document.querySelectorAll('.delete-button').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            const withdrawalId = e.target.closest('.delete-button').dataset.id;
+                            if (confirm('Êtes-vous sûr de vouloir supprimer cet historique ?')) {
+                                deleteWithdrawal(withdrawalId);
+                            }
                         });
-                    } else {
-                        historyContainer.innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-history"></i>
-                                <p>Aucun historique de retrait disponible.</p>
-                            </div>
-                        `;
-                        calculateTotals(null);
-                    }
-                });
-            }
-        }
-
-        function deleteWithdrawal(withdrawalId) {
-            const user = auth.currentUser;
-            if (user) {
-                const withdrawalRef = ref(database, 'users/' + user.uid + '/withdrawalHistory/' + withdrawalId);
-                remove(withdrawalRef)
-                    .then(() => {
-                        console.log('Retrait supprimé avec succès');
-                    })
-                    .catch((error) => {
-                        console.error('Erreur lors de la suppression :', error);
-                        alert('Une erreur est survenue lors de la suppression.');
                     });
-            }
-        }
+                } else {
+                    historyContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>Aucun historique de retrait disponible.</p>
+                        </div>
+                    `;
+                    calculateTotals(null);
+                }
+            });
+        };
 
+        // Gestionnaire d'authentification
         auth.onAuthStateChanged((user) => {
             if (user) {
                 loadWithdrawalHistory();

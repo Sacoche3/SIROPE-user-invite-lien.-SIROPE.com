@@ -302,32 +302,55 @@
             return new Intl.NumberFormat('fr-FR').format(amount);
         }
 
-        function formatDate(timestamp) {
+        function formatDate(dateValue) {
             try {
-                // Assurer que le timestamp est un nombre
-                const date = new Date(Number(timestamp));
+                console.log("Date à formater:", dateValue, "Type:", typeof dateValue);
                 
-                // Vérifier si la date est valide
-                if (isNaN(date.getTime())) {
-                    throw new Error('Invalid date');
+                // Si la date est undefined ou null
+                if (!dateValue) {
+                    return "Date non disponible";
                 }
 
-                // Options de formatage pour la date et l'heure
-                const options = {
+                let timestamp;
+                
+                // Convertir la date en timestamp si nécessaire
+                if (typeof dateValue === 'number') {
+                    timestamp = dateValue;
+                } else if (typeof dateValue === 'string') {
+                    // Essayer de parser comme un nombre d'abord
+                    if (!isNaN(dateValue)) {
+                        timestamp = parseInt(dateValue);
+                    } else {
+                        // Essayer de parser comme une date ISO
+                        timestamp = new Date(dateValue).getTime();
+                    }
+                } else if (dateValue instanceof Date) {
+                    timestamp = dateValue.getTime();
+                } else if (typeof dateValue === 'object' && dateValue.seconds) {
+                    // Pour les Timestamps Firestore
+                    timestamp = dateValue.seconds * 1000;
+                }
+
+                // Vérifier si le timestamp est valide
+                if (isNaN(timestamp)) {
+                    throw new Error('Timestamp invalide');
+                }
+
+                // Créer et formater la date
+                const date = new Date(timestamp);
+                return new Intl.DateTimeFormat('fr-FR', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false
-                };
+                }).format(date);
 
-                // Formater la date en français
-                return new Intl.DateTimeFormat('fr-FR', options).format(date);
             } catch (error) {
-                console.error('Erreur de formatage de date:', error, timestamp);
-                // Retourner une chaîne indiquant une erreur de date
-                return 'Date invalide';
+                console.error('Erreur de formatage de date:', error);
+                console.error('Valeur de date reçue:', dateValue);
+                return "Date non disponible";
             }
         }
 
@@ -361,11 +384,16 @@
                         historyContainer.innerHTML = '';
                         Object.keys(data).reverse().forEach((key) => {
                             const historyItem = data[key];
+                            console.log("Données de l'item:", historyItem); // Debug log
+                            
                             const div = document.createElement('div');
                             div.classList.add('history-item');
                             
                             const statusClass = historyItem.status.toLowerCase() === 'completed' ? 'status-completed' : 'status-pending';
                             const statusIcon = historyItem.status.toLowerCase() === 'completed' ? 'check-circle' : 'clock';
+                            
+                            // Log pour déboguer la date
+                            console.log(`Date pour l'item ${key}:`, historyItem.date);
                             
                             div.innerHTML = `
                                 <div class="history-details">
@@ -384,7 +412,7 @@
                                     <p>
                                         <span class="status ${statusClass}">
                                             <i class="fas fa-${statusIcon}"></i>
-                                            ${historyItem.status}
+                                            ${historyItem.status === 'completed' ? 'Approuvé' : 'En attente'}
                                         </span>
                                     </p>
                                 </div>
@@ -400,6 +428,7 @@
 
                         calculateTotals(data);
 
+                        // Ajouter les écouteurs d'événements pour les boutons de suppression
                         document.querySelectorAll('.delete-button').forEach((button) => {
                             button.addEventListener('click', (event) => {
                                 const withdrawalId = event.target.closest('.delete-button').getAttribute('data-id');
